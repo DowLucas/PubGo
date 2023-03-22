@@ -1,19 +1,23 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import './index.css';
-import app from './firebase';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./app/store";
+import reportWebVitals from "./reportWebVitals";
+import "./index.css";
+import app from "./firebase";
 
-const container = document.getElementById('root');
+import { BrowserRouter } from "react-router-dom";
+import AppRoutes from "./routes";
+
+const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );
