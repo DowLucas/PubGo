@@ -57,6 +57,7 @@ export const signInWithGoogle = () => async (dispatch) => {
     const result = await signInWithPopup(auth, provider);
     console.log(firebaseUserToObject(result.user));
     dispatch(setUser(firebaseUserToObject(result.user)));
+    window.location = "/"
 
   } catch (error) {
     dispatch(setError(error.message));

@@ -2,12 +2,11 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
-import { clearUser, setUser } from "./features/auth/authSlice";;
+import { clearUser, setUser } from "./features/auth/authSlice";
+import BottomNavigation from "./components/navigation/BottomNavigation";
 
 function App() {
   const dispatch = useDispatch();
-
-  console.log("hello")
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -30,6 +29,7 @@ function App() {
       <div>
         Hello
       </div>
+      <BottomNavigation/>
     </div>
   );
 }

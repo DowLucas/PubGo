@@ -8,6 +8,7 @@ import app from "./firebase";
 
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes";
+import { MantineProvider } from "@mantine/core";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -16,7 +17,9 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <AppRoutes />
+        <MantineProvider>
+          <AppRoutes />
+        </MantineProvider>
       </BrowserRouter>
     </Provider>
   </React.StrictMode>

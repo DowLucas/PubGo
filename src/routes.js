@@ -9,13 +9,13 @@ import Logout from "./features/auth/Logout";
 import PrivateRoute from "./features/auth/PrivateRoute";
 
 const AppRoutes = () => (
-  <Routes>
-    <Route path="/" element={<PrivateRoute />} >
-      <Route index element={<App />} />
-      <Route path="/logout" element={<Logout />} />
-    </Route>
-    <Route path="/login" element={<Login />} />
-  </Routes>
+    <Routes>
+      <Route path="/" element={<PrivateRoute />} >
+        <Route index element={<App />} />
+        <Route path="/logout" element={<Logout />} />
+      </Route>
+      <Route path="/login" element={<Login />} />
+    </Routes>
 );
 
 
