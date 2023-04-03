@@ -3,20 +3,21 @@ import { useDispatch } from "react-redux";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { clearUser, setUser } from "./features/auth/authSlice";
-import BottomNavigation from "./components/navigation/BottomNavigation";
+import { MantineProvider } from "@mantine/core";
+import AppRoutes from "./routes";
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const { uid, displayName, email, photoURL } = user;
-    dispatch(setUser({ uid, displayName, email, photoURL }));
-  } else {
-    dispatch(clearUser());
-  }
-});
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const { uid, displayName, email, photoURL } = user;
+      dispatch(setUser({ uid, displayName, email, photoURL }));
+    } else {
+      dispatch(clearUser());
+    }
+  });
 
     return () => {
       unsubscribe();
@@ -29,7 +30,6 @@ function App() {
       <div>
         Hello
       </div>
-      <BottomNavigation/>
     </div>
   );
 }

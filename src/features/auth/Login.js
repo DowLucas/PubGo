@@ -1,59 +1,58 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   signInWithGoogle,
   selectError,
 } from "./authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleIcon } from "./GoogleButton";
 import {
-  Col,
-  Container,
-  Grid,
   Paper,
   Button,
   Text,
-  Center,
+  Group,
+  Divider,
 } from "@mantine/core";
 
+
 export function GoogleButton(props) {
-  return <Button leftIcon={<GoogleIcon />} variant="default" color="gray" {...props} />;
+  const onClickEvent = props.onClick;
+
+  return <Button onClick={onClickEvent} leftIcon={<GoogleIcon />} variant="default" color="gray" {...props} />;
 }
 
-const Login = () => {
+const Login = (props) => {
   const error = useSelector(selectError);
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.auth.user);
+
   const dispatch = useDispatch();
 
   const handleSignInWithGoogle = () => {
     dispatch(signInWithGoogle());
   };
 
+  // Check auth
+  useEffect(() => {  
+    if (user) {
+      navigate("/");
+    }
+  }, [navigate, user])
+
   return (
-    <Container>
-      <Grid>
-        <Col span={12} md={8} lg={6} style={{ margin: "auto" }}>
-          <Paper padding="xl" shadow="xs">
-            <Center>
-              <div style={{ marginBottom: 20 }}>
-                <Text align="center" size="xl" weight={500}>
-                  Login
-                </Text>
-              </div>
-              {error && (
-                <Text color="red" align="center" style={{ marginTop: 10 }}>
-                  {error}
-                </Text>
-              )}
-              <div style={{ marginTop: 20 }}>
-                <GoogleButton onClick={handleSignInWithGoogle}>
-                  Sign in with Google
-                </GoogleButton>
-              </div>
-            </Center>
-          </Paper>
-        </Col>
-      </Grid>
-    </Container>
+    <Paper radius="md" p="xl" withBorder {...props}>
+      <Text size="lg" weight={500}>
+        Welcome to PubGo
+      </Text>
+
+      <Group grow mb="md" mt="md">
+        <GoogleButton onClick={handleSignInWithGoogle} radius="xl">Google</GoogleButton>
+      </Group>
+
+      <Divider label="Please Read T&C" labelPosition="center" my="lg" />
+      
+      <Link to="/terms">Terms and Conditions</Link>
+    </Paper>
   );
 };
 

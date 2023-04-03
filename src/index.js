@@ -17,7 +17,7 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <MantineProvider>
+        <MantineProvider theme={{ colorScheme: 'light' }} withGlobalStyles withNormalizeCSS>
           <AppRoutes />
         </MantineProvider>
       </BrowserRouter>
