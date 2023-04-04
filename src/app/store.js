@@ -5,18 +5,23 @@ import { realtimeDatabaseApi } from "../features/scores/scoresSlice";
 import authReducer from "../features/auth/authSlice";
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // Use localStorage
+import { eventApi } from '../features/events/eventSlice';
+import selectedEventSlice from '../features/events/selectedEventSlice';
+
 
 // Configure redux-persist with the desired storage and a key
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: [realtimeDatabaseApi.reducerPath],
+  blacklist: [realtimeDatabaseApi.reducerPaths],
   whitelist: ['auth'], // Only persist the 'auth' state
 };
 
 const rootReducer = combineReducers({
   counter: counterReducer,
   auth: authReducer,
+  selectedEvent: selectedEventSlice,
+  [eventApi.reducerPath]: eventApi.reducer,
   [realtimeDatabaseApi.reducerPath]: realtimeDatabaseApi.reducer,
 });
 
@@ -35,7 +40,9 @@ export const store = configureStore({
         ],
         ignoredPaths: ["auth.user"],
       },
-    }).concat(realtimeDatabaseApi.middleware),
+    })
+    .concat(eventApi.middleware)
+    .concat(realtimeDatabaseApi.middleware)
 });
 
 export const persistor = persistStore(store);

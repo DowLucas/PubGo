@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HomeMapView from "../features/events/HomeMapView";
-import { Box, Center, Drawer } from "@mantine/core";
+import { Box, Button, Center, Drawer } from "@mantine/core";
 import { Tabs } from "@mantine/core";
 import { SegmentedControl } from "@mantine/core";
+import { IconPhoto, IconMessageCircle, IconEye } from "@tabler/icons-react";
+import SelectedEventMapView from "../features/events/SelectedEventMapView";
 import {
-  IconPhoto,
-  IconMessageCircle,
-  IconSettings,
-  IconEye,
-} from "@tabler/icons-react";
+  useCreateEventMutation,
+  useFetchEventsQuery,
+} from "../features/events/eventSlice";
 
 const EventsPage = () => {
   const [showInfo, setShowInfo] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState("map");
+  // const { data: highScoresTables, error, isLoading } = useFetchHighScoresTablesQuery();
+  const { data: events, error, isLoading } = useFetchEventsQuery();
+  const [createEvent, { isSuccess: createEventSuccess }] =
+    useCreateEventMutation();
 
   const toggleInfo = () => {
     setShowInfo(!showInfo);
@@ -22,52 +26,64 @@ const EventsPage = () => {
     setActiveTab(value);
   };
 
+  const createRandomEvent = () => {
+    const randomLat = Math.random() * (90 - -90) + -90;
+    const randomLng = Math.random() * (180 - -180) + -180;
+    const randomDate = new Date(
+      Math.random() * (new Date().getTime() - new Date(2020, 0, 1).getTime()) +
+        new Date(2020, 0, 1).getTime()
+    );
+
+    const newEvent = {
+      name: "Random Event",
+      description: "This is a random event",
+      location: {
+        latitude: randomLat.toString(),
+        longitude: randomLng.toString(),
+      },
+      startDateTime: randomDate,
+      endDateTime: randomDate,
+    };
+    createEvent(newEvent);
+  };
+
   return (
     <div>
       <SegmentedControl
         data={[
           {
-            value: 0,
+            value: "map",
             label: (
               <Center>
                 <IconEye size="1rem" />
-                <Box ml={10}>Preview</Box>
+                <Box ml={10}>Map</Box>
               </Center>
             ),
             icon: <IconPhoto size="0.8rem" />,
           },
           {
-            value: 1,
+            value: "list",
             label: "List View",
             icon: <IconMessageCircle size="0.8rem" />,
           },
         ]}
         color="pink"
+        size="sm"
         radius={0}
-        transitionDuration={500}
+        transitionDuration={220}
         transitionTimingFunction="ease"
         value={activeTab}
         onChange={handleTabChange}
         fullWidth
       />
-      {activeTab === 0 && (
+      {activeTab === "map" && (
         <>
-          <HomeMapView openDrawer={toggleInfo} />
-          <Drawer
-            opened={showInfo}
-            onClose={toggleInfo}
-            size="xs"
-            padding="md"
-            zIndex={1}
-            withOverlay={false}
-            position="bottom"
-            title="Information about the place and event"
-          >
-            {/* ... */}
-          </Drawer>
+          <HomeMapView openDrawer={toggleInfo} events={events} />
+          <SelectedEventMapView />
+          <Button onClick={createRandomEvent}>Random</Button>
         </>
       )}
-      {activeTab === 1 && <div>Messages tab content</div>}
+      {activeTab === "list" && <div>Messages tab content</div>}
     </div>
   );
 };

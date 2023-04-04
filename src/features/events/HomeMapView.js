@@ -6,6 +6,7 @@ import {
   useJsApiLoader,
 } from "@react-google-maps/api";
 import { createStyles, Drawer } from "@mantine/core";
+import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 
 const containerStyle = {
   width: "100%",
@@ -34,6 +35,9 @@ const useStyles = createStyles((theme) => ({
 
 const HomeMapView = (props) => {
   const { classes } = useStyles();
+  const { events } = props;
+
+  const setSelectedEvent = useSetSelectedEvent();
 
   const [currentLocation, setCurrentLocation] = useState(null);
 
@@ -65,6 +69,25 @@ const HomeMapView = (props) => {
   if (loadError) return <div>Error loading map</div>;
   if (!isLoaded) return <div>Loading map...</div>;
 
+  const renderMarkers = () => {
+    if (!events) return null;
+
+    return events.map((event) => {
+      
+      const latitude = parseFloat(event.location.latitude);
+      const longitude = parseFloat(event.location.longitude);
+        
+      return (
+        <Marker 
+          key={event.id}
+          position={{ lat: latitude, lng: longitude }}
+          clickable
+          onClick={() => setSelectedEvent(event)}
+        />
+      );
+    });
+  };
+
   return (
     <div className={classes.mapWrapper}>
       <GoogleMap
@@ -80,7 +103,7 @@ const HomeMapView = (props) => {
           height: "100%",
         }}
       >
-        <Marker position={KTHCenter} onClick={openDrawer} clickable />
+        {renderMarkers()}
       </GoogleMap>
     </div>
   );

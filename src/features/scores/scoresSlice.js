@@ -5,6 +5,7 @@ import { database } from "../../firebase";
 export const realtimeDatabaseApi = createApi({
   baseQuery: fakeBaseQuery(),
   tagTypes: ["Score"],
+  reducerPath: "realtimeDatabaseApi",
   endpoints: (builder) => ({
     fetchHighScoresTables: builder.query({
       queryFn: async () => {
