@@ -34,7 +34,6 @@ export const eventApi = createApi({
           const updatedEventData = {
             ...eventData,
             startDateTime: eventData.startDateTime.toISOString(),
-            endDateTime: eventData.endDateTime.toISOString(),
           };
 
           const eventsRef = ref(database, "events");
