@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Paper,
@@ -18,6 +18,8 @@ import {
   Center,
   Divider,
   LoadingOverlay,
+  Select,
+  Modal,
 } from "@mantine/core";
 
 import { FloatingLabelInput } from "../components/FloatingInput";
@@ -25,6 +27,12 @@ import { useForm } from "@mantine/form";
 import { DateInput, DateTimePicker } from "@mantine/dates";
 import { useCreateEventMutation } from "../features/events/eventSlice";
 import { useNavigate } from "react-router-dom";
+import {
+  useCreateSavedLocationMutation,
+  useFetchSavedLocationsQuery,
+} from "../features/events/savedLocationsSlice";
+import { useDisclosure } from "@mantine/hooks";
+import CreateSavedLocations from "../components/CreateSavedLocations";
 
 const useStyles = createStyles((theme) => ({
   newEventText: {
@@ -46,6 +54,24 @@ const CreateEventPage = () => {
     setActive((current) => (current > 0 ? current - 1 : current));
 
   const [createEvent, { isLoading, error }] = useCreateEventMutation();
+  const { data: savedLocations } = useFetchSavedLocationsQuery();
+  const [data, setData] = useState([]);
+  const [createNewLocation, setCreateNewLocation] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [locationName, setLocationName] = useState("");
+
+  useEffect(() => {
+    if (savedLocations) {
+      setData(
+        savedLocations.map((location) => ({
+          value: location.id,
+          label: location.name,
+          latitude: location.latitude,
+          longitude: location.longitude,
+        }))
+      );
+    }
+  }, [savedLocations]);
 
   const { classes, theme } = useStyles();
   const form = useForm({
@@ -121,6 +147,27 @@ const CreateEventPage = () => {
                   mx="auto"
                   {...form.getInputProps("startDateTime")}
                 />
+                <Select
+                  className={classes.input}
+                  label="Creatable Select"
+                  data={data}
+                  placeholder="Select items"
+                  nothingFound="Nothing found"
+                  searchable
+                  creatable
+                  getCreateLabel={(query) => `+ Create ${query}`}
+                  onCreate={(query) => {
+                    open();
+                    setLocationName(query);
+                  }}
+                />
+                {opened && (
+                  <CreateSavedLocations
+                    opened={opened}
+                    close={close}
+                    initialLocationName={locationName}
+                  />
+                )}
               </Input.Wrapper>
             )}
 
