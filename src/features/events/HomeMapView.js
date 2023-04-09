@@ -54,6 +54,7 @@ const HomeMapView = (props) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log(position.coords);
           setCurrentLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -73,12 +74,12 @@ const HomeMapView = (props) => {
     if (!events) return null;
 
     return events.map((event) => {
-      
+      console.log(event);
       const latitude = parseFloat(event.location.latitude);
       const longitude = parseFloat(event.location.longitude);
-        
+
       return (
-        <Marker 
+        <Marker
           key={event.id}
           position={{ lat: latitude, lng: longitude }}
           clickable

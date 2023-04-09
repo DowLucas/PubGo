@@ -1,40 +1,31 @@
 import { useEffect, useState } from "react";
 import {
   Container,
-  Paper,
   Text,
-  Col,
   Input,
-  InputBase,
-  IconChevronDown,
   createStyles,
   rem,
   TextInput,
   Textarea,
   Group,
   Button,
-  Stepper,
   Checkbox,
-  Center,
   Divider,
   LoadingOverlay,
   Select,
-  Modal,
 } from "@mantine/core";
 
-import { FloatingLabelInput } from "../components/FloatingInput";
 import { useForm } from "@mantine/form";
-import { DateInput, DateTimePicker } from "@mantine/dates";
+import { DateTimePicker } from "@mantine/dates";
 import { useCreateEventMutation } from "../features/events/eventSlice";
 import { useNavigate } from "react-router-dom";
-import {
-  useCreateSavedLocationMutation,
-  useFetchSavedLocationsQuery,
-} from "../features/events/savedLocationsSlice";
+import { useFetchSavedLocationsQuery } from "../features/events/savedLocationsApi";
 import { useDisclosure } from "@mantine/hooks";
 import CreateSavedLocations from "../components/CreateSavedLocations";
+import { useSelector } from "react-redux";
+import { savedLocationsSelector } from "../features/events/savedLocationsSlice";
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles((_) => ({
   newEventText: {
     marginTop: rem(100),
     fontSize: rem(40),
@@ -54,24 +45,12 @@ const CreateEventPage = () => {
     setActive((current) => (current > 0 ? current - 1 : current));
 
   const [createEvent, { isLoading, error }] = useCreateEventMutation();
-  const { data: savedLocations } = useFetchSavedLocationsQuery();
+  const { data: __ } = useFetchSavedLocationsQuery();
   const [data, setData] = useState([]);
-  const [createNewLocation, setCreateNewLocation] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
   const [locationName, setLocationName] = useState("");
 
-  useEffect(() => {
-    if (savedLocations) {
-      setData(
-        savedLocations.map((location) => ({
-          value: location.id,
-          label: location.name,
-          latitude: location.latitude,
-          longitude: location.longitude,
-        }))
-      );
-    }
-  }, [savedLocations]);
+  const savedLocationsData = useSelector(savedLocationsSelector);
 
   const { classes, theme } = useStyles();
   const form = useForm({
@@ -81,6 +60,7 @@ const CreateEventPage = () => {
       description: "",
       startDateTime: "",
       showNumberOfGuests: false,
+      location: {},
       showEventBusyness: false,
       publicEvent: false,
       termsOfService: false,
@@ -149,17 +129,29 @@ const CreateEventPage = () => {
                 />
                 <Select
                   className={classes.input}
-                  label="Creatable Select"
-                  data={data}
+                  label="Saved Locations"
+                  data={savedLocationsData.map((location) => {
+                    return {
+                      label: location.name,
+                      value: location.id,
+                      location: {
+                        longitude: location.longitude,
+                        latitude: location.latitude,
+                      },
+                    };
+                  })}
                   placeholder="Select items"
                   nothingFound="Nothing found"
+                  value={form.values.location}
                   searchable
                   creatable
+                  onChange={(value) => form.setFieldValue("location", value)}
                   getCreateLabel={(query) => `+ Create ${query}`}
                   onCreate={(query) => {
                     open();
                     setLocationName(query);
                   }}
+                  {...form.getInputProps("location")}
                 />
                 {opened && (
                   <CreateSavedLocations

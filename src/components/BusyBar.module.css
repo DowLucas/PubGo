@@ -1,0 +1,33 @@
+.progressBar {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background-color: #f3f3f3;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  .progress {
+    position: absolute;
+    height: 100%;
+    border-radius: 15px;
+  }
+  
+  .wave {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, rgba(255, 255, 255, 0.3) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.3) 75%);
+    background-size: 100px 100px;
+    animation: wave 2s linear infinite;
+  }
+  
+  @keyframes wave {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100px 0;
+    }
+  }
+  
