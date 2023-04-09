@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Button,
   Center,
   Container,
@@ -11,6 +12,8 @@ import {
 import { useForm } from "@mantine/form";
 import React, { useEffect, useRef } from "react";
 import { useJsApiLoader, Autocomplete } from "@react-google-maps/api";
+import { useCreateSavedLocationMutation } from "../features/events/savedLocationsApi";
+import { IconX } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
   input: {
@@ -24,38 +27,23 @@ const CreateSavedLocations = (props) => {
     googleMapsApiKey: process.env.REACT_APP_MAPS_API,
     libraries: ["places"],
   });
+  const [saveLocation] = useCreateSavedLocationMutation();
 
   const { classes } = useStyles();
 
-  const form = useForm({
-    initialValues: {
-      name: "",
-      latitude: "",
-      longitude: "",
-    },
-    validationRules: {
-      name: (value) => value.length > 0 && value.length < 50,
-      // Validate that the latitude is a float between -90 and 90
-      latitude: (value) => parseFloat(value) >= -90 && parseFloat(value) <= 90,
-      // Validate that the longitude is a float between -180 and 180
-      longitude: (value) =>
-        parseFloat(value) >= -180 && parseFloat(value) <= 180,
-    },
-  });
   const { opened, close } = props;
   const { initialLocationName } = props;
 
   const [location, setLocation] = React.useState({
     name: initialLocationName,
-    latitude: "",
-    longitude: "",
+    latitude: 0.0,
+    longitude: 0.0,
   });
 
   const autocompleteRef = useRef();
 
   const onPlaceChanged = () => {
     const place = autocompleteRef.current.getPlace();
-    console.log(place.geometry.location.lat(), place.name);
     if (place.geometry) {
       setLocation({
         name: place.name,
@@ -63,6 +51,29 @@ const CreateSavedLocations = (props) => {
         longitude: place.geometry.location.lng(),
       });
     }
+  };
+
+  const validateLocation = () => {
+    if (location.name === "") {
+      return false;
+    }
+
+    // Validate that longitude and latitude are valid
+    if (location.latitude < -90 || location.latitude > 90) {
+      return false;
+    }
+    if (location.longitude < -180 || location.longitude > 180) {
+      return false;
+    }
+    return true;
+  };
+
+  const onSaveLocation = () => {
+    if (!validateLocation()) {
+      return;
+    }
+    console.log("Saving location: " + JSON.stringify(location));
+    saveLocation(location).then(() => {});
   };
 
   if (!isLoaded) {
@@ -82,14 +93,18 @@ const CreateSavedLocations = (props) => {
       >
         <TextInput
           withAsterisk
-          label="Location Name"
+          label="Create Location"
           placeholder={"Name of the location"}
         />
       </Autocomplete>
       <Center className={classes.input}>
-        <Button color="pink" size="xs">
-          Confirm
+        <Button color="pink" size="xs" onClick={onSaveLocation}>
+          Save
         </Button>
+        {/* Cancel buton with X icon  */}
+        <ActionIcon color="red" variant="filled" mx={"sm"}>
+          <IconX size="1rem" />
+        </ActionIcon>
       </Center>
     </>
   );
