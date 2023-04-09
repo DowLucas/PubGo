@@ -8,6 +8,7 @@ import {
   useCreateEventMutation,
   useFetchEventsQuery,
 } from "../features/events/eventSlice";
+import NavBar from "../features/navbar/NavBar";
 
 const EventsPage = () => {
   const [showInfo, setShowInfo] = useState(false);
@@ -48,6 +49,7 @@ const EventsPage = () => {
 
   return (
     <div>
+      <NavBar />
       <SegmentedControl
         data={[
           {

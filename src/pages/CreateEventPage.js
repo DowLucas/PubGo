@@ -24,6 +24,7 @@ import { useDisclosure } from "@mantine/hooks";
 import CreateSavedLocations from "../components/CreateSavedLocations";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
+import Navbar from "../features/navbar/NavBar";
 
 const useStyles = createStyles((_) => ({
   newEventText: {
@@ -124,6 +125,8 @@ const CreateEventPage = () => {
 
   return (
     <>
+      <Navbar />
+
       <form
         onSubmit={form.onSubmit(
           (values, _event) => {
