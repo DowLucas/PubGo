@@ -8,12 +8,13 @@ import { eventApi } from "../features/events/eventSlice";
 import selectedEventSlice from "../features/events/selectedEventSlice";
 import { savedLocationsApi } from "../features/events/savedLocationsApi";
 import savedLocationsReducer from "../features/events/savedLocationsSlice";
+import navbarReducer from "../features/navbar/navbarSlice";
 
 // Configure redux-persist with the desired storage and a key
 const persistConfig = {
   key: "root",
   storage,
-  blacklist: [],
+  blacklist: ["navbar"],
   whitelist: ["auth"], // Only persist the 'auth' state
 };
 
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   selectedEvent: selectedEventSlice,
   savedLocations: savedLocationsReducer,
+  navbar: navbarReducer,
   [savedLocationsApi.reducerPath]: savedLocationsApi.reducer,
   [eventApi.reducerPath]: eventApi.reducer,
 });
