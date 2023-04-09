@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import HomeMapView from "../features/events/HomeMapView";
-import { Box, Button, Center, Drawer } from "@mantine/core";
-import { Tabs } from "@mantine/core";
+import { Box, Button, Center } from "@mantine/core";
 import { SegmentedControl } from "@mantine/core";
 import { IconPhoto, IconMessageCircle, IconEye } from "@tabler/icons-react";
 import SelectedEventMapView from "../features/events/SelectedEventMapView";

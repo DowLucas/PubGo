@@ -1,30 +1,8 @@
 import React, { useEffect, useState } from "react";
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  useJsApiLoader,
-} from "@react-google-maps/api";
-import { createStyles, Drawer } from "@mantine/core";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import { createStyles } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
-
-const containerStyle = {
-  width: "100%",
-  height: "100%",
-};
-
-const mapStyles = [
-  {
-    featureType: "all",
-    elementType: "labels",
-    stylers: [{ visibility: "on" }],
-  },
-];
-
-const KTHCenter = {
-  lat: 59.3493901,
-  lng: 18.0715047,
-};
+import { KTHCenter, mapStyles } from "../../utils/const";
 
 const useStyles = createStyles((theme) => ({
   mapWrapper: {

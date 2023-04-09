@@ -1,19 +1,17 @@
 import {
-  ActionIcon,
   Button,
-  Center,
-  Container,
-  Input,
+  Group,
   Modal,
   TextInput,
   createStyles,
   rem,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import React, { useEffect, useRef } from "react";
-import { useJsApiLoader, Autocomplete } from "@react-google-maps/api";
+import React, { useEffect, useState } from "react";
+import { GoogleMap, Marker, LoadScript } from "@react-google-maps/api";
 import { useCreateSavedLocationMutation } from "../features/events/savedLocationsApi";
-import { IconX } from "@tabler/icons-react";
+import { KTHCenter } from "../utils/const";
+import { notifications } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons-react";
 
 const useStyles = createStyles((theme) => ({
   input: {
@@ -21,91 +19,136 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+const mapOptions = {
+  disableDefaultUI: true,
+  fullscreenControl: false,
+  streetViewControl: false,
+  styles: [
+    {
+      featureType: "all",
+      elementType: "labels",
+      stylers: [{ visibility: "off" }],
+    },
+    {
+      featureType: "road",
+      elementType: "labels.text",
+      stylers: [{ visibility: "on" }],
+    },
+    {
+      featureType: "poi.school",
+      elementType: "labels",
+      stylers: [{ visibility: "on" }],
+    },
+  ],
+};
+
+const libraries = ["places"];
+
 const CreateSavedLocations = (props) => {
-  const { isLoaded, loadError } = useJsApiLoader({
-    id: "google-map",
-    googleMapsApiKey: process.env.REACT_APP_MAPS_API,
-    libraries: ["places"],
-  });
+  // const { isLoaded, loadError } = useJsApiLoader({
+  //   id: "google-map",
+  //   googleMapsApiKey: process.env.REACT_APP_MAPS_API,
+  //   libraries,
+  // });
+
+  const [locationName, setLocationName] = React.useState("");
+
   const [saveLocation] = useCreateSavedLocationMutation();
 
   const { classes } = useStyles();
-
   const { opened, close } = props;
-  const { initialLocationName } = props;
-
-  const [location, setLocation] = React.useState({
-    name: initialLocationName,
-    latitude: 0.0,
-    longitude: 0.0,
-  });
-
-  const autocompleteRef = useRef();
-
-  const onPlaceChanged = () => {
-    const place = autocompleteRef.current.getPlace();
-    if (place.geometry) {
-      setLocation({
-        name: place.name,
-        latitude: place.geometry.location.lat(),
-        longitude: place.geometry.location.lng(),
-      });
-    }
-  };
 
   const validateLocation = () => {
-    if (location.name === "") {
-      return false;
-    }
-
-    // Validate that longitude and latitude are valid
-    if (location.latitude < -90 || location.latitude > 90) {
-      return false;
-    }
-    if (location.longitude < -180 || location.longitude > 180) {
-      return false;
-    }
-    return true;
+    return locationName.length > 0 && locationName.length < 50;
   };
+
+  useEffect(() => {
+    setMarker(null);
+    setLocationName("");
+  }, [opened]);
 
   const onSaveLocation = () => {
-    if (!validateLocation()) {
+    if (!validateLocation() || !marker) {
       return;
     }
-    console.log("Saving location: " + JSON.stringify(location));
-    saveLocation(location).then(() => {});
+
+    const locationObject = {
+      name: locationName,
+      lat: marker.lat,
+      lng: marker.lng,
+    };
+
+    saveLocation({ payload: locationObject })
+      .unwrap()
+      .then(() => {
+        close();
+        notifications.show({
+          title: "Location saved",
+          id: "location-saved",
+          color: "green",
+          message: "The location was saved successfully",
+          icon: <IconCheck />,
+        });
+      })
+      .catch((error) => {
+        console.error("Error saving location:", error);
+      });
   };
 
-  if (!isLoaded) {
-    return null;
-  }
+  const [marker, setMarker] = useState(null);
+  const handleMarkerChange = (event) => {
+    setMarker({
+      lat: event.latLng.lat(),
+      lng: event.latLng.lng(),
+    });
+  };
 
   return (
     <>
-      <Autocomplete
-        onLoad={(autocomplete) => {
-          autocompleteRef.current = autocomplete;
-        }}
-        onPlaceChanged={onPlaceChanged}
-        onUnmount={() => {
-          autocompleteRef.current = null;
-        }}
-      >
-        <TextInput
-          withAsterisk
-          label="Create Location"
-          placeholder={"Name of the location"}
+      {window.google === undefined ? (
+        <LoadScript
+          googleMapsApiKey={process.env.REACT_APP_MAPS_API}
+          libraries={libraries}
         />
-      </Autocomplete>
-      <Center className={classes.input}>
-        <Button color="pink" size="xs" onClick={onSaveLocation}>
-          Save
-        </Button>
-        {/* Cancel buton with X icon  */}
-        <ActionIcon color="red" variant="filled" mx={"sm"}>
-          <IconX size="1rem" />
-        </ActionIcon>
-      </Center>
+      ) : null}
+      <Modal opened={opened} onClose={close} title="Create Location" centered>
+        <TextInput
+          className={classes.input}
+          withAsterisk
+          label="Location Name"
+          value={locationName}
+          onChange={(e) => {
+            setLocationName(e.currentTarget.value);
+          }}
+          placeholder={"The name of the location"}
+          required
+        />
+        <GoogleMap
+          options={mapOptions}
+          center={KTHCenter}
+          onClick={handleMarkerChange}
+          zoom={15}
+          mapContainerStyle={{
+            marginTop: rem(20),
+            width: "100%",
+            height: "400px",
+          }}
+        >
+          {marker && (
+            <Marker
+              position={marker}
+              draggable
+              onDragEnd={handleMarkerChange}
+            />
+          )}
+        </GoogleMap>
+        <Group position="center" mt={rem(20)}>
+          <Button onClick={onSaveLocation}>Save</Button>
+          <Button onClick={close} color="red">
+            Cancel
+          </Button>
+        </Group>
+      </Modal>
     </>
   );
 };

@@ -88,7 +88,7 @@ const savedLocationSlice = createSlice({
 
 export const savedLocationsSelector = createSelector(
   (state) => state.savedLocations,
-  (savedLocations) => savedLocations.data
+  (savedLocations) => savedLocations.data,
 );
 
 export default savedLocationSlice.reducer;

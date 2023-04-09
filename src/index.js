@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 import app from "./firebase";
 
+import { Notifications } from "@mantine/notifications";
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "./routes";
 import { MantineProvider } from "@mantine/core";
@@ -17,7 +18,12 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <MantineProvider theme={{ colorScheme: 'light' }} withGlobalStyles withNormalizeCSS>
+        <MantineProvider
+          theme={{ colorScheme: "light" }}
+          withGlobalStyles
+          withNormalizeCSS
+        >
+          <Notifications />
           <AppRoutes />
         </MantineProvider>
       </BrowserRouter>

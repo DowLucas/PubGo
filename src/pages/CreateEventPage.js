@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Container,
   Text,
@@ -22,8 +22,8 @@ import { useNavigate } from "react-router-dom";
 import { useFetchSavedLocationsQuery } from "../features/events/savedLocationsApi";
 import { useDisclosure } from "@mantine/hooks";
 import CreateSavedLocations from "../components/CreateSavedLocations";
-import { useSelector } from "react-redux";
-import { savedLocationsSelector } from "../features/events/savedLocationsSlice";
+import { notifications } from "@mantine/notifications";
+import { IconX } from "@tabler/icons-react";
 
 const useStyles = createStyles((_) => ({
   newEventText: {
@@ -38,6 +38,7 @@ const useStyles = createStyles((_) => ({
 
 const CreateEventPage = () => {
   const navigate = useNavigate();
+
   const [active, setActive] = useState(1);
   const nextStep = () =>
     setActive((current) => (current < 2 ? current + 1 : current));
@@ -45,12 +46,14 @@ const CreateEventPage = () => {
     setActive((current) => (current > 0 ? current - 1 : current));
 
   const [createEvent, { isLoading, error }] = useCreateEventMutation();
-  const { data: __ } = useFetchSavedLocationsQuery();
-  const [data, setData] = useState([]);
-  const [opened, { open, close }] = useDisclosure(false);
-  const [locationName, setLocationName] = useState("");
 
-  const savedLocationsData = useSelector(savedLocationsSelector);
+  const {
+    data: savedLocationsData = [],
+    isLoading: savedLocationsLoading,
+    refetch,
+  } = useFetchSavedLocationsQuery();
+
+  const [opened, { open, close }] = useDisclosure(false);
 
   const { classes, theme } = useStyles();
   const form = useForm({
@@ -61,6 +64,7 @@ const CreateEventPage = () => {
       startDateTime: "",
       showNumberOfGuests: false,
       location: {},
+      useClicker: false,
       showEventBusyness: false,
       publicEvent: false,
       termsOfService: false,
@@ -75,16 +79,60 @@ const CreateEventPage = () => {
       // Event start date cannot be in the past
       startDateTime: (value) => (value > new Date() ? null : "Invalid date"),
       termsOfService: (value) => (value ? null : "You must agree to the terms"),
+      location: (value) => {
+        if (value === null || value === undefined) {
+          return "You must select a location";
+        }
+        return null;
+      },
     },
   });
+
+  const submitForm = async (values) => {
+    const location = savedLocationsData.filter(
+      (loc) => loc.id === values.location
+    );
+
+    if (location.length === 0) {
+      notifications.show({
+        title: "Error",
+        message: "Please select a location",
+        color: "red",
+        icon: <IconX />,
+      });
+      return;
+    }
+
+    values.location = location[0];
+
+    await createEvent(values);
+    navigate("/events");
+  };
+
+  if (savedLocationsLoading) {
+    return <LoadingOverlay visible={savedLocationsLoading} overlayBlur={2} />;
+  }
+
+  const formErrorNotification = (validationErros, values, event) => {
+    notifications.show({
+      title: "Error",
+      message: "Please fill in all required fields",
+      color: "red",
+      icon: <IconX />,
+    });
+  };
 
   return (
     <>
       <form
-        onSubmit={form.onSubmit(async (values) => {
-          await createEvent(values);
-          navigate("/events");
-        })}
+        onSubmit={form.onSubmit(
+          (values, _event) => {
+            submitForm(values);
+          },
+          (validationErrors, _values, _event) => {
+            formErrorNotification(validationErrors, _values, _event);
+          }
+        )}
       >
         <LoadingOverlay visible={isLoading} overlayBlur={2} />
         <div id="stepper">
@@ -143,23 +191,20 @@ const CreateEventPage = () => {
                   placeholder="Select items"
                   nothingFound="Nothing found"
                   value={form.values.location}
+                  clearable
                   searchable
-                  creatable
-                  onChange={(value) => form.setFieldValue("location", value)}
-                  getCreateLabel={(query) => `+ Create ${query}`}
-                  onCreate={(query) => {
-                    open();
-                    setLocationName(query);
+                  selectOnBlur={true}
+                  required
+                  withAsterisk
+                  onChange={(value) => {
+                    form.setFieldValue("location", value);
                   }}
                   {...form.getInputProps("location")}
                 />
-                {opened && (
-                  <CreateSavedLocations
-                    opened={opened}
-                    close={close}
-                    initialLocationName={locationName}
-                  />
-                )}
+                <Button color="pink" size="xs" my={10} onClick={open}>
+                  Create Location
+                </Button>
+                <CreateSavedLocations opened={opened} close={close} />
               </Input.Wrapper>
             )}
 
@@ -197,6 +242,16 @@ const CreateEventPage = () => {
                   size="md"
                   {...form.getInputProps("publicEvent")}
                 />
+                <Checkbox
+                  className={classes.input}
+                  label="Use clicker"
+                  color="green"
+                  checked={form.values.useClicker}
+                  description="If checked, the event will have a clicker that can be used to count the number of guests."
+                  radius="xl"
+                  size="md"
+                  {...form.getInputProps("useClicker")}
+                />
                 <Divider my={"xl"} />
                 <Checkbox
                   className={classes.input}
@@ -204,7 +259,6 @@ const CreateEventPage = () => {
                   color="green"
                   description="If checked, you agree to the terms of service"
                   radius="xl"
-                  required
                   size="md"
                   {...form.getInputProps("termsOfService")}
                 />
@@ -215,7 +269,13 @@ const CreateEventPage = () => {
 
         <Group position="center" mt="xl">
           {active > 1 && (
-            <Button variant="default" onClick={prevStep}>
+            <Button
+              variant="default"
+              onClick={(e) => {
+                e.preventDefault();
+                prevStep();
+              }}
+            >
               Back
             </Button>
           )}
@@ -224,7 +284,13 @@ const CreateEventPage = () => {
               Submit
             </Button>
           ) : (
-            <Button onClick={nextStep} color="teal">
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                nextStep();
+              }}
+              color="teal"
+            >
               Next
             </Button>
           )}
