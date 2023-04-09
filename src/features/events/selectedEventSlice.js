@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createEvent, fetchEvents, updateEvent } from "./eventSlice";
 
 // define a thunk action that will be dispatched on marker click
 export const onMarkerClick = createAsyncThunk(

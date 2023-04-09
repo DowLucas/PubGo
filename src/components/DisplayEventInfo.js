@@ -1,14 +1,5 @@
 import React from "react";
-import {
-  Card,
-  Avatar,
-  Text,
-  Progress,
-  Badge,
-  Group,
-  ActionIcon,
-  Divider,
-} from "@mantine/core";
+import { Card, Text, Badge, Group, Divider } from "@mantine/core";
 import { MantineLogo } from "@mantine/ds";
 import BusyBar from "./BusyBar";
 
