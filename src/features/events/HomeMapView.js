@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
-import { createStyles } from "@mantine/core";
+import { LoadingOverlay, createStyles } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
 
@@ -45,8 +45,9 @@ const HomeMapView = (props) => {
     }
   }, []);
 
-  if (loadError) return <div>Error loading map</div>;
-  if (!isLoaded) return <div>Loading map...</div>;
+  if (!isLoaded) {
+    return <LoadingOverlay visible overlayBlur={2} />;
+  }
 
   const renderMarkers = () => {
     if (!events) return null;
