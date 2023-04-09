@@ -1,47 +1,48 @@
-# Getting Started with Create React App and Redux
+### What is PubGo?
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+PubGo is an app intended to give the pub-goer an overview of KTH-campus where the user can see, on a map, which pubs are open, how many people are there and if the event is open to the public or not. It should be
+possible for the pub-goer to quickly get a route to the nearest pub regarding their position. In addition to this, each Klubbmästeri(KM) at KTH has the ability to create events for their pubs, to be displayed on the map. The app also includes a clicker functionality, which will enable the pub-goers to see if the pub is busy and will allow the KM to keep an accurate count of how many people are in the pub.
 
-## Available Scripts
+### Completed Work
 
-In the project directory, you can run:
+We have the initial layout of the app, with a login-page where the user logs in with a google account. After that we have a simple map view where the user can see all the events, for now we have a `random` button that adds a event on a random place in the world. There is also an event view that shows details of the event, such as if it is public and of busy the establishment is. Lastly there is an event-create view, where the user sets the name, date and place for the event. When choosing a place you can search for a new address to add if it is not already in the list of know places
 
-### `npm start`
+### Work Distribution
+We are aware that, as it stands, the work distribution has not been entirely equal due to late TW3 submissions. This led to Lucas starting to work on the initial setup of the project and adding login functionality and simple views which can be worked on further. We are aware that for the remainder of the project, more work will be done by Olivia, Max, and Eric in order to achieve a more equal work distribution.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Future Work
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Users should be able to login with email & password, in addition to the Google Login.
 
-### `npm test`
+- It should be possible to create user groups for each Klubbmästeri(KM), to keep track of what KM-member creates what event and to ensure that only authorized KM-members can create events for that KM. There should be an Admin KM group user, responsible for adding new members and appointing new admins.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- To authenticate the first admin user for each KM group and ensure that only people affiliated with an KM has access to make events, there needs to be an Authentication process and the possibility to enter an authcode in the app.
 
-### `npm run build`
+- In the map view, the user should be able to select a pub/event and then get a route (nearest path) from the user position to the pub. We are also planning to have a button that takes the user to the nearest open pub.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- In the map view, the user should be able to switch to a list view where they can see all the current an upcoming events.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- In the bottom of the screen we will have a navbar for easy navigation between each view.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### File Structure
 
-### `npm run eject`
+Currently the file structure is quite straightforward. We've created 3 different directories with different purposes. `pages` is where all the pages of the application is stored. A page renders a view. Each view renders different components. `CreateEventPage` is a view that displays a form which is used to create a new event. In the `features` directory, the components and redux logic is found. Here, the slices (e.g `selectedEventSlice`) and API:s (e.g `eventSlice`) are found which fetch and display data from the Realtime Database. We have future plans to the structure in the directory more divided and clear, for instance, differentiating between views and redux logic. In the `components` folder, all the components that don't fetch data from firebase are found. These components rather get their data from their props. These components are for instance `BusyBar` which displays how busy a pub is or `DisplayEventInfo` which displays the info of an event.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Here are some interesting files and what they do.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+#### routes.js
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Chooses what route is to be rendered depending on the URL.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### eventSlice.js
 
-## Learn More
+Used for fetching, creating and modifying events. It uses the `createApi` module from `@reduxjs/toolkit`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+#### PrivateRoute.js
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-# PubGo
+Used for verifying that the user is logged in, it the user isn't logged in, we redirect the user to the login page.
+
+#### EventsPage.js
+
+Page for displaying the events in either map view (`HomeMapView`) or list view (`HomeListView`).
+.
