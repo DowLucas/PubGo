@@ -53,9 +53,8 @@ const HomeMapView = (props) => {
     if (!events) return null;
 
     return events.map((event) => {
-      console.log(event);
-      const latitude = parseFloat(event.location.latitude);
-      const longitude = parseFloat(event.location.longitude);
+      const latitude = parseFloat(event.location.lat);
+      const longitude = parseFloat(event.location.lng);
 
       return (
         <Marker

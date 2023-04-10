@@ -17,6 +17,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
+    "env-cmd": "^10.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
@@ -31,10 +32,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:deploy": "env-cmd -f .env npm run build && firebase deploy --only hosting"
   },
   "eslintConfig": {
-    "extends": [
+    "extends": [  
       "react-app",
       "react-app/jest"
     ]

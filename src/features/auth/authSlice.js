@@ -12,11 +12,11 @@ export const authSlice = createSlice({
   },
   reducers: {
     setUser: (state, action) => {
-        const { uid, displayName, email, photoURL } = action.payload;
-        state.user = { uid, displayName, email, photoURL };
-      },
+      const { uid, displayName, email, photoURL } = action.payload;
+      state.user = { uid, displayName, email, photoURL };
+    },
     clearUser: (state) => {
-        state.user = null;
+      state.user = null;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -57,8 +57,6 @@ export const signInWithGoogle = () => async (dispatch) => {
     const result = await signInWithPopup(auth, provider);
     console.log(firebaseUserToObject(result.user));
     dispatch(setUser(firebaseUserToObject(result.user)));
-    window.location = "/"
-
   } catch (error) {
     dispatch(setError(error.message));
   }

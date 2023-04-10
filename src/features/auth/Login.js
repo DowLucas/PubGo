@@ -1,24 +1,22 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  signInWithGoogle,
-  selectError,
-} from "./authSlice";
+import { signInWithGoogle, selectError } from "./authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleIcon } from "./GoogleButton";
-import {
-  Paper,
-  Button,
-  Text,
-  Group,
-  Divider,
-} from "@mantine/core";
-
+import { Paper, Button, Text, Group, Divider } from "@mantine/core";
 
 export function GoogleButton(props) {
   const onClickEvent = props.onClick;
 
-  return <Button onClick={onClickEvent} leftIcon={<GoogleIcon />} variant="default" color="gray" {...props} />;
+  return (
+    <Button
+      onClick={onClickEvent}
+      leftIcon={<GoogleIcon />}
+      variant="default"
+      color="gray"
+      {...props}
+    />
+  );
 }
 
 const Login = (props) => {
@@ -33,11 +31,11 @@ const Login = (props) => {
   };
 
   // Check auth
-  useEffect(() => {  
+  useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/events");
     }
-  }, [navigate, user])
+  }, [navigate, user]);
 
   return (
     <Paper radius="md" p="xl" withBorder {...props}>
@@ -46,15 +44,16 @@ const Login = (props) => {
       </Text>
 
       <Group grow mb="md" mt="md">
-        <GoogleButton onClick={handleSignInWithGoogle} radius="xl">Google</GoogleButton>
+        <GoogleButton onClick={handleSignInWithGoogle} radius="xl">
+          Google
+        </GoogleButton>
       </Group>
 
       <Divider label="Please Read T&C" labelPosition="center" my="lg" />
-      
+
       <Link to="/terms">Terms and Conditions</Link>
     </Paper>
   );
 };
-
 
 export default Login;
