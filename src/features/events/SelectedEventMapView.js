@@ -1,4 +1,4 @@
-import { Paper } from '@mantine/core';
+import { Button, Paper } from '@mantine/core';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import DisplayEventInfo from '../../components/DisplayEventInfo';
@@ -13,6 +13,7 @@ const SelectedEventMapView = () => {
     return (
         <Paper>
             <DisplayEventInfo event={selectedEvent} />
+            <Button onClick={()=>{}}>Directions</Button>
         </Paper>
     );
 };

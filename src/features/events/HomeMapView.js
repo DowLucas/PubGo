@@ -8,6 +8,8 @@ import {
 import { LoadingOverlay, createStyles } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
+import { useDispatch } from "react-redux";
+import { directionsCurrentLocation } from "../directions/directionsSlice";
 
 const useStyles = createStyles((theme) => ({
   mapWrapper: {
@@ -20,9 +22,12 @@ const HomeMapView = (props) => {
   const { classes } = useStyles();
   const { events } = props;
 
-  const setSelectedEvent = useSetSelectedEvent();
+  const dispatch = useDispatch()
 
-  const [currentLocation, setCurrentLocation] = useState(null);
+  const setSelectedEvent = useSetSelectedEvent();
+  // const setCurrentLocation = useSetCurrentLocation();
+
+  //const [currentLocation, setCurrentLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
 
   function openDrawer() {
@@ -38,10 +43,10 @@ const HomeMapView = (props) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setCurrentLocation({
+          dispatch(directionsCurrentLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
-          });
+          }));
         },
         () => console.error("Could not fetch location, check permissions.")
       );

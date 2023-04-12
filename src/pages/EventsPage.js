@@ -81,7 +81,6 @@ const EventsPage = () => {
         <>
           <HomeMapView openDrawer={toggleInfo} events={events} />
           <SelectedEventMapView />
-          <Button onClick={createRandomEvent}>Random</Button>
         </>
       )}
       {activeTab === "list" && <div>Messages tab content</div>}

@@ -9,6 +9,7 @@ import selectedEventSlice from "../features/events/selectedEventSlice";
 import { savedLocationsApi } from "../features/events/savedLocationsApi";
 import savedLocationsReducer from "../features/events/savedLocationsSlice";
 import navbarReducer from "../features/navbar/navbarSlice";
+import directionsSlice from "../features/directions/directionsSlice";
 
 // Configure redux-persist with the desired storage and a key
 const persistConfig = {
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
   selectedEvent: selectedEventSlice,
   savedLocations: savedLocationsReducer,
   navbar: navbarReducer,
+  directions: directionsSlice,
   [savedLocationsApi.reducerPath]: savedLocationsApi.reducer,
   [eventApi.reducerPath]: eventApi.reducer,
 });
