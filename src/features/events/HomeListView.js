@@ -22,11 +22,17 @@ const HomeListView = (props) => {
         });
     }, [events]);
 
-    const rows = events.map((event, index) => (
-        <tr key={event.name}>
-            <DisplayEventCard event={event} />
-        </tr>
-      ));
+    const filteredEvents = events.filter((event) => new Date(event.startDateTime) > new Date());
+
+    const sortedEvents = [...filteredEvents].sort(
+        (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
+    );
+    
+    const rows = sortedEvents.map((event, index) => (
+    <tr key={event.name}>
+        <DisplayEventCard event={event} />
+    </tr>
+    ));
 
     return (
         <Table verticalSpacing="xl" highlightOnHover>
