@@ -5,7 +5,28 @@ import BusyBar from './BusyBar';
 
 export default function DisplayEventCard(props) {
     const { event } = props
-    console.log(event)
+
+    const eventStartDate = new Date(event.startDateTime);
+    const eventEndDate = new Date(event.endDateTime);
+    const today = new Date();
+    const eventInProgress = today >= eventStartDate && today <= eventEndDate;
+    const daysLeft = Math.ceil((eventStartDate - today) / (1000 * 60 * 60 * 24));
+    const badgeColor =
+      daysLeft > 7
+        ? "red"
+        : eventInProgress
+        ? "green"
+        : "blue";
+
+    let daysLeftText;
+    if (eventInProgress) {
+        daysLeftText = "Ongoing";
+    } else if (daysLeft < 0) {
+        daysLeftText = "Passed";
+    } else {
+        daysLeftText = `${daysLeft} days left`;
+    }
+
     return (
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Card.Section component="a">
@@ -17,12 +38,13 @@ export default function DisplayEventCard(props) {
           </Card.Section>
     
           <Group position="apart" mt="md" mb="xs">
-            <Text weight={500}>{event.name}</Text>
-            {event.showEventBusyness && (
-                <Badge color="red" variant="light">
-                    Busy
-                </Badge>
-            )}
+            <div>
+                <Text weight={500}>{event.name}</Text>
+                <Text fz="xs" c="dimmed">{new Date(event.startDateTime).toLocaleString()}</Text>
+            </div>
+            <Badge variant="outline" color={badgeColor}>
+                {daysLeftText}
+            </Badge>
           </Group>
     
           <Text size="sm" color="dimmed">
