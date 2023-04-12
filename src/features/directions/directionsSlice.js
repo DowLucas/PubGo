@@ -9,11 +9,15 @@ const directionsSlice = createSlice({
       state.currentLocation = action.payload;
       console.log("curr location state changed")
     },
+    directionsArrivalDestination: (state, action) => {
+        state.arrivalDestination = action.payload;
+        console.log("arrival location state changed")
+      },
     clearDirections: () => {
       return null;
     },
   },
 });
 
-export const { directionsCurrentLocation, clearDirections } = directionsSlice.actions;
+export const { directionsCurrentLocation, directionsArrivalDestination, clearDirections } = directionsSlice.actions;
 export default directionsSlice.reducer;
