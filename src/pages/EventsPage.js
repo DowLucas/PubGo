@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import HomeMapView from "../features/events/HomeMapView";
+import HomeListView from "../features/events/HomeListView"
 import { Box, Button, Center } from "@mantine/core";
 import { SegmentedControl } from "@mantine/core";
 import { IconPhoto, IconMessageCircle, IconEye } from "@tabler/icons-react";
@@ -84,7 +85,7 @@ const EventsPage = () => {
           <Button onClick={createRandomEvent}>Random</Button>
         </>
       )}
-      {activeTab === "list" && <div>Messages tab content</div>}
+      {activeTab === "list" && <HomeListView events={events} />}
     </div>
   );
 };
