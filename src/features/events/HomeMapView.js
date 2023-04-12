@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  LoadScript,
+  Marker,
+  useJsApiLoader,
+} from "@react-google-maps/api";
 import { LoadingOverlay, createStyles } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
@@ -18,6 +23,7 @@ const HomeMapView = (props) => {
   const setSelectedEvent = useSetSelectedEvent();
 
   const [currentLocation, setCurrentLocation] = useState(null);
+  const [markers, setMarkers] = useState([]);
 
   function openDrawer() {
     props.openDrawer();
@@ -32,31 +38,37 @@ const HomeMapView = (props) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          console.log(position.coords);
           setCurrentLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           });
         },
-        () => alert("Error fetching location")
+        () => console.error("Could not fetch location, check permissions.")
       );
     } else {
       alert("Geolocation not supported");
     }
   }, []);
 
+  useEffect(() => {
+    if (isLoaded) {
+      loadMarkers();
+    }
+  }, [isLoaded, events]);
+
   if (!isLoaded) {
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 
-  const renderMarkers = () => {
+  const loadMarkers = () => {
     if (!events) return null;
+    let markers = [];
 
-    return events.map((event) => {
+    events.forEach((event) => {
       const latitude = parseFloat(event.location.lat);
       const longitude = parseFloat(event.location.lng);
 
-      return (
+      markers.push(
         <Marker
           key={event.id}
           position={{ lat: latitude, lng: longitude }}
@@ -65,26 +77,30 @@ const HomeMapView = (props) => {
         />
       );
     });
+
+    setMarkers(markers);
   };
 
   return (
-    <div className={classes.mapWrapper}>
-      <GoogleMap
-        options={{
-          styles: mapStyles,
-          fullscreenControl: false,
-          streetViewControl: false,
-        }}
-        center={KTHCenter}
-        zoom={15}
-        mapContainerStyle={{
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        {renderMarkers()}
-      </GoogleMap>
-    </div>
+    <>
+      <div className={classes.mapWrapper}>
+        <GoogleMap
+          options={{
+            styles: mapStyles,
+            fullscreenControl: false,
+            streetViewControl: false,
+          }}
+          center={KTHCenter}
+          zoom={15}
+          mapContainerStyle={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          {markers}
+        </GoogleMap>
+      </div>
+    </>
   );
 };
 
