@@ -52,6 +52,7 @@ const EventsPage = () => {
     <div>
       <NavBar />
       <SegmentedControl
+      style={{ position: "fixed", top: "0px", left: "0", right: "0", zIndex: "999" }}
         data={[
           {
             value: "map",
