@@ -25,10 +25,10 @@ export const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(logout.pending, (state) => {
-        state.status = "loading";
+        state.status = "loading"; 
       })
       .addCase(login.fulfilled, (state, action) => {
-        state.status = "idle";
+        state.status = "idle";                       
         state.user = firebaseUserToObject(action.payload); // Use the helper function
         state.error = null;
       })
