@@ -4,7 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { clearUser } from "./authSlice";
-import { Button, Group, Paper, Text } from "@mantine/core";
+import { Button, Center, Group, Paper, Text } from "@mantine/core";
+import { LogoMedium } from "../../components/logo/Logo";
 
 const Logout = (props) => {
   const dispatch = useDispatch();
@@ -21,15 +22,27 @@ const Logout = (props) => {
   };
 
   return (
-    <>
-      <Paper radius="md" p="xl" withBorder {...props}>
+    <div>
+      <Center>
+        <LogoMedium />
+      </Center>
+      <Paper
+        radius="md"
+        p="sm"
+        withBorder
+        {...props}
+        style={{
+          width: "80%",
+          margin: "0 auto",
+        }}
+      >
         <Text size="lg" weight={500}>
           Profile
         </Text>
 
         <Button onClick={handleLogout}>Logout</Button>
       </Paper>
-    </>
+    </div>
   );
 };
 
