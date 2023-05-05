@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Loader } from '@mantine/core';
+import { Table, Loader, SimpleGrid } from '@mantine/core';
 import DisplayEventCard from '../../components/DisplayEventCard';
 
 const HomeListView = (props) => {
@@ -28,28 +28,27 @@ const HomeListView = (props) => {
       return <Loader />;
     }
 
-    const filteredEvents = events.filter((event) => new Date(event.startDateTime) > new Date());
+    const filteredEvents = events.filter((event) => new Date(event.endDateTime) > new Date());
 
     const sortedEvents = [...filteredEvents].sort(
         (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
     );
-    
+
     const rows = sortedEvents.map((event, index) => (
-    <tr key={event.name}>
-      <div style={{ margin: "10px 0" }}>
+      <div key={event.name}>
         <DisplayEventCard event={event} />
       </div>
-    </tr>
     ));
 
     return (
-        <Table verticalSpacing="xl">
-        <thead>
-          <tr>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </Table>
+      <SimpleGrid
+      cols={1}
+      spacing="md"
+      mt={50}
+      mb={60}
+      >
+        {rows}
+      </SimpleGrid>
     );
 }
 

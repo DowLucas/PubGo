@@ -1,4 +1,4 @@
-import { Card, Image, Text, Badge, Button, Group, Container } from '@mantine/core';
+import { Card, Image, Text, Badge, Button, Group, Container, Spoiler} from '@mantine/core';
 import { MantineLogo } from "@mantine/ds";
 import BusyBar from './BusyBar';
 
@@ -71,9 +71,9 @@ export default function DisplayEventCard(props) {
               </Badge>
             </Group>
       
-            <Text size="sm">
+            <Spoiler maxHeight={120} showLabel="Show more" hideLabel="Hide">
               {event.description}
-            </Text>
+            </Spoiler>
             
             {event.showEventBusyness && isEventToday && (
             <div style={{marginBottom: "10px", marginTop: "10px"}}>

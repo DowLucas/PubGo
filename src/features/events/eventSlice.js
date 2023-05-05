@@ -31,10 +31,10 @@ export const eventApi = createApi({
       queryFn: async (eventData) => {
         try {
           // Convert the Date object to an ISO string
-          
           const updatedEventData = {
             ...eventData,
             startDateTime: eventData.startDateTime.toISOString(),
+            endDateTime: eventData.endDateTime.toISOString(),
           };
 
           const eventsRef = ref(database, "events");
