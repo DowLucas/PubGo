@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState} from "react";
 import {
   Container,
   Text,
@@ -13,7 +13,14 @@ import {
   Divider,
   LoadingOverlay,
   Select,
+  SimpleGrid,
+  FileInput,
 } from "@mantine/core";
+import { IconUpload } from '@tabler/icons-react';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../features/auth/authSlice';
+
+
 
 import { useForm } from "@mantine/form";
 import { DateTimePicker } from "@mantine/dates";
@@ -55,6 +62,10 @@ const CreateEventPage = () => {
   } = useFetchSavedLocationsQuery();
 
   const [opened, { open, close }] = useDisclosure(false);
+  const [bannerFile, setBannerFile] = useState(null);
+  const currentUser = useSelector(selectUser);
+
+
 
   const { classes, theme } = useStyles();
   const form = useForm({
@@ -76,7 +87,7 @@ const CreateEventPage = () => {
       name: (value) => (/^.{2,30}$/.test(value) ? null : "Invalid name"),
       // Description regex no longer than 150 characters
       description: (value) =>
-        /^.{0,150}$/.test(value) ? null : "Invalid description",
+        /^.{0,1000}$/.test(value) ? null : "Invalid description",
       // Event start date cannot be in the past
       startDateTime: (value) => (value > new Date() ? null : "Invalid date"),
       termsOfService: (value) => (value ? null : "You must agree to the terms"),
@@ -105,6 +116,8 @@ const CreateEventPage = () => {
     }
 
     values.location = location[0];
+    values.owner = currentUser.uid;
+
 
     await createEvent(values);
     navigate("/events");
@@ -122,6 +135,11 @@ const CreateEventPage = () => {
       icon: <IconX />,
     });
   };
+
+  const handleBannerFileChange = (image) => {
+    setBannerFile(image);
+  };
+
 
   return (
     <>
@@ -166,17 +184,37 @@ const CreateEventPage = () => {
                   label="Description"
                   {...form.getInputProps("description")}
                 />
-                <DateTimePicker
-                  className={classes.input}
-                  valueFormat="DD/MM/YYYY HH:mm"
-                  label="Event Start"
-                  value={form.values.startDateTime}
-                  placeholder="Choose date & time of event"
-                  maw={400}
-                  required
-                  withAsterisk
-                  mx="auto"
-                  {...form.getInputProps("startDateTime")}
+                <SimpleGrid cols={2} spacing="xs">
+                  <DateTimePicker
+                    className={classes.input}
+                    valueFormat="DD/MM/YYYY HH:mm"
+                    label="Event Start"
+                    value={form.values.startDateTime}
+                    placeholder="Choose date & time of event"
+                    maw={400}
+                    required
+                    withAsterisk
+                    {...form.getInputProps("startDateTime")}
+                  />
+                  <DateTimePicker
+                    className={classes.input}
+                    valueFormat="DD/MM/YYYY HH:mm"
+                    label="Event end"
+                    value={form.values.endDateTime}
+                    placeholder="Choose date & time of event"
+                    maw={400}
+                    required
+                    withAsterisk
+                    {...form.getInputProps("endDateTime")}
+                  />
+                </SimpleGrid>
+                <FileInput
+                  mt={10}
+                  placeholder="Add banner"
+                  label="Event banner"
+                  accept="image/png,image/jpeg" 
+                  icon={<IconUpload size={rem(14)} />}
+                  onChange={handleBannerFileChange}
                 />
                 <Select
                   className={classes.input}

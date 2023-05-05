@@ -5,14 +5,18 @@ import {
   Marker,
   useJsApiLoader,
 } from "@react-google-maps/api";
-import { LoadingOverlay, createStyles } from "@mantine/core";
+import { LoadingOverlay, createStyles, Space } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
 
 const useStyles = createStyles((theme) => ({
   mapWrapper: {
     width: "100vw",
-    height: "60vh",
+    height: "90vh",
+    transition: "height 0.5s ease",
+  },
+  mapWrapperMarkerClicked: {
+    height: "100vh",
   },
 }));
 
@@ -24,6 +28,7 @@ const HomeMapView = (props) => {
 
   const [currentLocation, setCurrentLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
+  const [markerClicked, setMarkerClicked] = useState(false);
 
   function openDrawer() {
     props.openDrawer();
@@ -60,11 +65,15 @@ const HomeMapView = (props) => {
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 
+
+
   const loadMarkers = () => {
     if (!events) return null;
     let markers = [];
 
-    events.forEach((event) => {
+    const filteredEvents = events.filter((event) => new Date(event.endDateTime) > new Date());
+
+    filteredEvents.forEach((event) => {
       const latitude = parseFloat(event.location.lat);
       const longitude = parseFloat(event.location.lng);
 
@@ -73,7 +82,11 @@ const HomeMapView = (props) => {
           key={event.id}
           position={{ lat: latitude, lng: longitude }}
           clickable
-          onClick={() => setSelectedEvent(event)}
+          onClick={() => {
+            setSelectedEvent(event)
+            setMarkerClicked(true);
+          }}
+
         />
       );
     });
@@ -81,9 +94,16 @@ const HomeMapView = (props) => {
     setMarkers(markers);
   };
 
+  const handleMapClick = () => {
+    setSelectedEvent(null);
+  };
+
   return (
     <>
-      <div className={classes.mapWrapper}>
+      <div className={`${classes.mapWrapper} ${
+          markerClicked ? classes.mapWrapperMarkerClicked : ""
+        }`}>
+        <Space h="5vh"/>
         <GoogleMap
           options={{
             styles: mapStyles,
@@ -96,9 +116,14 @@ const HomeMapView = (props) => {
             width: "100%",
             height: "100%",
           }}
+          onClick={() => {
+            handleMapClick()
+            setMarkerClicked(false)
+            }}
         >
           {markers}
         </GoogleMap>
+        <Space h="5vh"/>
       </div>
     </>
   );
