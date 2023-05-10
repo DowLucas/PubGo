@@ -115,6 +115,11 @@ const CreateEventPage = () => {
       return;
     }
 
+    values.location = {
+      ...location[0],
+      capacity: location[0].capacity, // Add the capacity to the event values
+    };
+
     values.location = location[0];
     values.banner = bannerFile;
     values.owner = currentUser.uid;
