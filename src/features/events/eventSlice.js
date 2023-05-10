@@ -33,6 +33,9 @@ export const eventApi = createApi({
           // Convert the Date object to an ISO string
           const updatedEventData = {
             ...eventData,
+            clicker: {
+              count: 0,
+            },
             startDateTime: eventData.startDateTime.toISOString(),
             endDateTime: eventData.endDateTime.toISOString(),
           };
