@@ -1,4 +1,4 @@
-import { Card, Image, Text, Badge, Button, Group, Container, Spoiler} from '@mantine/core';
+import { Card, Image, Text, Badge, Button, Group, Container, Spoiler, Divider, Progress} from '@mantine/core';
 import { MantineLogo } from "@mantine/ds";
 import BusyBar from './BusyBar';
 
@@ -42,6 +42,13 @@ export default function DisplayEventCard(props) {
         daysLeftText = `${daysLeft} days left`;
     }
 
+    let eventBusyLevel = 75
+    let eventCount = 75
+    if(event.clicker) {
+      eventBusyLevel = Math.floor(event.clicker.count/event.location.capacity)*100;
+      eventCount = event.clicker.count;
+    }
+
     return (
       <Container size="xs" px="xs">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
@@ -72,7 +79,7 @@ export default function DisplayEventCard(props) {
                 </div>
               </div> */}
               <div>
-                <Text weight={500}>{event.name}</Text>
+                <Text weight={600}>{event.name}</Text>
                 <Text fz="xs" c="dimmed">{new Date(event.startDateTime).toLocaleString()}</Text>
               </div>
               <Badge variant='outline' color={badgeColor}>
@@ -86,8 +93,20 @@ export default function DisplayEventCard(props) {
             
             {event.showEventBusyness && isEventToday && (
             <div style={{marginBottom: "10px", marginTop: "10px"}}>
-              <BusyBar busyLevel={70} />
+              <BusyBar busyLevel={eventBusyLevel} />
             </div>)}
+
+            {event.showNumberOfGuests && (
+            <div>
+              <Text fz="sm" mt="md">
+                Current number of guests:{' '}
+                <Text span fw={500}>
+                  {eventCount}/{event.capacity}
+                </Text>
+              </Text>
+            </div>
+
+            )}
             {/**This button should give directions*/}
             <Button variant="light" color="blue" fullWidth mt="md" radius="md">
               Get directions
