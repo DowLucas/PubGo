@@ -9,7 +9,6 @@ import { selectUser } from '../features/auth/authSlice';
 const useStyles = createStyles((theme) => ({
   logoutWrapper: {
     justifyContent: "center",
-    height: "100vh",
   },
 }));
 
@@ -23,7 +22,11 @@ const ProfilePage = () => {
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 
-  const filteredEvents = events.filter((event) => event.owner === currentUser.uid);
+  let filteredEvents = events.filter((event) => event.owner === currentUser.uid);
+  filteredEvents = filteredEvents.filter((event) => new Date(event.endDateTime) > new Date());
+  filteredEvents = [...filteredEvents].sort(
+    (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
+  );
 
   return (
     <>

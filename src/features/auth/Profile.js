@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { clearUser } from "./authSlice";
-import { Button, Center, Group, Paper, Text, Avatar, Title, SimpleGrid, Box, ScrollArea, Container} from "@mantine/core";
+import { Button, Center, Avatar, Title, Box, ScrollArea, Stack} from "@mantine/core";
 import { LogoMedium } from "../../components/logo/Logo";
 import DisplayEventBox from '../../components/DisplayEventBox';
 
@@ -33,21 +33,20 @@ const Profile = (props) => {
 
   return (
     <div>
-        <Center mt={30} md={10}>
+        <Center mt={30} md={20}>
             <Avatar color="cyan" radius="xl" size="xl">MK</Avatar>
         </Center>
-        <Title align="center" order={2}>{user.username || "Username"}</Title>
-        <Container align="center" mt="xl">
+        <Title align="center" mb={20} order={2}>{user.username || "Username"}</Title>
             <Title order={3} mb="xs" align="left" pl="xs">My events</Title>
-            <ScrollArea bg="lightgray" type="always" h={350} pt="md" style={{ borderRadius: "10px" }}>
+            <ScrollArea bg="lightgray" h={350} pt="md" pb="md">
                 <Box>
-                    <SimpleGrid cols={1}>
+                    <Stack align="center">
                     {eventCards}
-                    </SimpleGrid>
+                    </Stack>
                 </Box>
             </ScrollArea>
-        </Container>
-        <Center my={30}>
+
+        <Center mt={30}>
             <Button onClick={handleLogout} color="red" variant="light">Logout</Button>
         </Center>
     </div>

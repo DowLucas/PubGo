@@ -52,7 +52,7 @@ const Navbar = () => {
     console.log(path, activePage);
   }, []);
 
-  console.log("activePage", activePage);
+  //console.log("activePage", activePage);
 
   const navItemClass = (page) =>
     `${classes.navItem} ${activePage === page ? classes.active : ""}`;
