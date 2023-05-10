@@ -87,8 +87,8 @@ const Navbar = () => {
           </Col>
           <Col span={3}>
             <div
-              className={navItemClass("Logout")}
-              onClick={() => handlePageChange("/logout", "Logout")}
+              className={navItemClass("Profile")}
+              onClick={() => handlePageChange("/profile", "Profile")}
             >
               <IconUsersGroup />
             </div>
