@@ -13,7 +13,7 @@ const SelectedEventMapView = () => {
     return (
         <Paper>
             <DisplayEventInfo event={selectedEvent} />
-            <Button onClick={()=>{}}>Set Directions</Button>
+            <Button onClick={()=>{}}>Get Directions</Button>
         </Paper>
     );
 };

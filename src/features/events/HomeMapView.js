@@ -4,6 +4,8 @@ import {
   LoadScript,
   Marker,
   useJsApiLoader,
+  DirectionsService,
+  DirectionsRenderer,
 } from "@react-google-maps/api";
 import { LoadingOverlay, createStyles } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
@@ -30,6 +32,13 @@ const HomeMapView = (props) => {
   //const [currentLocation, setCurrentLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
 
+  // Directions state
+  const [directions, setDirections] = useState(null);
+  const [startLocation, setStartLocation] = useState({ lat: 59.346415, lng: 18.067729 });
+  const [endLocation, setEndLocation] = useState({ lat: 59.346707, lng: 18.072127 });
+  const [showRoute, setShowRoute] = useState(false);
+
+
   function openDrawer() {
     props.openDrawer();
   }
@@ -37,6 +46,7 @@ const HomeMapView = (props) => {
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map",
     googleMapsApiKey: process.env.REACT_APP_MAPS_API,
+    //libraries: ['places'],
   });
 
   useEffect(() => {
@@ -86,6 +96,55 @@ const HomeMapView = (props) => {
     setMarkers(markers);
   };
 
+  async function calculateRoute() {
+    const directionsService = new google.maps.DirectionsService() // eslint-disable-line
+    const results = await directionsService.route({
+      origin: startLocation,
+      destination: endLocation,
+      travelMode: google.maps.TravelMode.DRIVING // eslint-disable-line
+    })
+    setDirections(results)
+  }
+
+  // const directionsCallback = (response) => {
+  //   console.log("respons " + response)
+  //   if (response !== null) {
+  //     setDirections(response);
+  //   }
+  // }
+
+//   // define your event handler to set origin and destination
+// const handleDirections = () => {
+//   // set origin and destination
+//   console.log("before " + startLocation)
+
+//   //setStartLocation({ lat: 59.346415, lng: 18.067729 });
+//   //setEndLocation({ lat: 59.346707, lng: 18.072127 });
+//   setShowRoute(true);
+//   console.log("after " + showRoute)
+//   console.log("after " + directions)
+// }
+
+// const directionsService = new google.maps.DirectionsService(); // eslint-disable-line
+
+// const origin = { lat: 40.756795, lng: -73.954298 };
+// const destination = { lat: 41.756795, lng: -78.954298 };
+
+// directionsService.route(
+//   {
+//     origin: origin,
+//     destination: destination,
+//     travelMode: google.maps.TravelMode.DRIVING // eslint-disable-line
+//   },
+//   (result, status) => {
+//     if (status === google.maps.DirectionsStatus.OK) { // eslint-disable-line
+//       setDirections(result)
+//     } else {
+//       console.error(`error fetching directions ${result}`);
+//     }
+//   }   
+// );
+
   return (
     <>
       <div className={classes.mapWrapper}>
@@ -102,9 +161,27 @@ const HomeMapView = (props) => {
             height: "100%",
           }}
         >
+          {/* {showRoute && startLocation && endLocation && (
+          <DirectionsService
+            options={{
+              endLocation,
+              startLocation,
+              travelMode: window.google.maps.TravelMode.WALKING
+            }}
+            callback={directionsCallback}
+          />
+        )}
+        {showRoute && directions && (
+          <DirectionsRenderer
+            directions={directions}
+          />
+        )} */}
+          {directions && <DirectionsRenderer directions={directions}/>}
+
           {markers}
         </GoogleMap>
       </div>
+      <button onClick={calculateRoute}>Get Directions</button>
     </>
   );
 };
