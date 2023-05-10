@@ -74,6 +74,7 @@ const CreateEventPage = () => {
       name: "",
       description: "",
       startDateTime: "",
+      endDateTime: "",
       showNumberOfGuests: false,
       location: {},
       useClicker: false,
@@ -90,6 +91,7 @@ const CreateEventPage = () => {
         /^.{0,1000}$/.test(value) ? null : "Invalid description",
       // Event start date cannot be in the past
       startDateTime: (value) => (value > new Date() ? null : "Invalid date"),
+      endDateTime: (value, values) => (value > values.startDateTime ? null:  "invalid end date"),
       termsOfService: (value) => (value ? null : "You must agree to the terms"),
       location: (value) => {
         if (value === null || value === undefined) {
@@ -115,7 +117,13 @@ const CreateEventPage = () => {
       return;
     }
 
+    values.location = {
+      ...location[0],
+      capacity: location[0].capacity, // Add the capacity to the event values
+    };
+
     values.location = location[0];
+    values.banner = bannerFile;
     values.owner = currentUser.uid;
 
 
