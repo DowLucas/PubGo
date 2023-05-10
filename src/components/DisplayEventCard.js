@@ -96,7 +96,7 @@ export default function DisplayEventCard(props) {
               <BusyBar busyLevel={eventBusyLevel} />
             </div>)}
 
-            {event.showNumberOfGuests && (
+            {event.showNumberOfGuests && isEventToday &&(
             <div>
               <Text fz="sm" mt="md">
                 Current number of guests:{' '}
