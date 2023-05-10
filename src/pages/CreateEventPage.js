@@ -116,6 +116,7 @@ const CreateEventPage = () => {
     }
 
     values.location = location[0];
+    values.banner = bannerFile;
     values.owner = currentUser.uid;
 
 

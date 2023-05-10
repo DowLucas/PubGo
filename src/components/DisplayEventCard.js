@@ -46,11 +46,20 @@ export default function DisplayEventCard(props) {
       <Container size="xs" px="xs">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
             <Card.Section component="a">
+              {event.banner && (
+                  <Image
+                  src={event.banner}
+                  height={160}
+                  alt="https://www.kth.se/polopoly_fs/1.1144231.1645111858!/image/KTH%20Campus_P5M9240%202%20skuren_500_400_72dpi.jpeg"
+                  />
+              ) || (
               <Image
                 src="https://www.kth.se/polopoly_fs/1.1144231.1645111858!/image/KTH%20Campus_P5M9240%202%20skuren_500_400_72dpi.jpeg"
                 height={160}
                 alt="Kth"
               />
+              )
+              }
             </Card.Section>
       
             {/*commented code is to display logo next to event name and date*/}
