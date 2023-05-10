@@ -10,7 +10,7 @@ import {
 import { LoadingOverlay, createStyles } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { directionsCurrentLocation } from "../directions/directionsSlice";
 
 const useStyles = createStyles((theme) => ({
@@ -26,6 +26,9 @@ const HomeMapView = (props) => {
 
   const dispatch = useDispatch()
 
+  // access currentLocation state value from the Redux store
+  const currentLocation = useSelector((state) => state.directions.currentLocation);
+
   const setSelectedEvent = useSetSelectedEvent();
   // const setCurrentLocation = useSetCurrentLocation();
 
@@ -34,8 +37,8 @@ const HomeMapView = (props) => {
 
   // Directions state
   const [directions, setDirections] = useState(null);
-  const [startLocation, setStartLocation] = useState({ lat: 59.346415, lng: 18.067729 });
-  const [endLocation, setEndLocation] = useState({ lat: 59.346707, lng: 18.072127 });
+  const [startLocation, setStartLocation] = useState(null);
+  const [endLocation, setEndLocation] = useState(null);
   const [showRoute, setShowRoute] = useState(false);
 
 
@@ -88,7 +91,7 @@ const HomeMapView = (props) => {
           key={event.id}
           position={{ lat: latitude, lng: longitude }}
           clickable
-          onClick={() => setSelectedEvent(event)}
+          onClick={() => {setSelectedEvent(event); setEndLocation({ lat: latitude, lng: longitude })}}
         />
       );
     });
@@ -96,14 +99,26 @@ const HomeMapView = (props) => {
     setMarkers(markers);
   };
 
+
   async function calculateRoute() {
+    //clearRoute()
+    setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
     const directionsService = new google.maps.DirectionsService() // eslint-disable-line
     const results = await directionsService.route({
       origin: startLocation,
       destination: endLocation,
-      travelMode: google.maps.TravelMode.DRIVING // eslint-disable-line
+      travelMode: google.maps.TravelMode.WALKING // eslint-disable-line
     })
     setDirections(results)
+    setShowRoute(true)
+    console.log("directions: "+directions)
+  }
+
+  function clearRoute() {
+    console.log("directions: "+directions)
+    //DirectionsRenderer.setMap(null)
+    setDirections(null)
+    console.log("directions: "+directions)
   }
 
   // const directionsCallback = (response) => {
@@ -125,26 +140,6 @@ const HomeMapView = (props) => {
 //   console.log("after " + directions)
 // }
 
-// const directionsService = new google.maps.DirectionsService(); // eslint-disable-line
-
-// const origin = { lat: 40.756795, lng: -73.954298 };
-// const destination = { lat: 41.756795, lng: -78.954298 };
-
-// directionsService.route(
-//   {
-//     origin: origin,
-//     destination: destination,
-//     travelMode: google.maps.TravelMode.DRIVING // eslint-disable-line
-//   },
-//   (result, status) => {
-//     if (status === google.maps.DirectionsStatus.OK) { // eslint-disable-line
-//       setDirections(result)
-//     } else {
-//       console.error(`error fetching directions ${result}`);
-//     }
-//   }   
-// );
-
   return (
     <>
       <div className={classes.mapWrapper}>
@@ -161,27 +156,12 @@ const HomeMapView = (props) => {
             height: "100%",
           }}
         >
-          {/* {showRoute && startLocation && endLocation && (
-          <DirectionsService
-            options={{
-              endLocation,
-              startLocation,
-              travelMode: window.google.maps.TravelMode.WALKING
-            }}
-            callback={directionsCallback}
-          />
-        )}
-        {showRoute && directions && (
-          <DirectionsRenderer
-            directions={directions}
-          />
-        )} */}
-          {directions && <DirectionsRenderer directions={directions}/>}
-
+          {showRoute && directions && <DirectionsRenderer directions={directions}/>}
           {markers}
         </GoogleMap>
       </div>
       <button onClick={calculateRoute}>Get Directions</button>
+      <button onClick={clearRoute}>Clear Route</button>
     </>
   );
 };
