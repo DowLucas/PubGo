@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { createStyles, LoadingOverlay } from "@mantine/core";
 import Profile from "../features/auth/Profile";
 import Navbar from "../features/navbar/NavBar";
@@ -15,18 +15,20 @@ const useStyles = createStyles((theme) => ({
 const ProfilePage = () => {
   const { classes } = useStyles();
   const { data: events, error, isLoading } = useFetchEventsQuery();
-  
   const currentUser = useSelector(selectUser);
-  
-  if (!events) {
-    return <LoadingOverlay visible overlayBlur={2} />;
-  }
+  const [filteredEvents, setFilteredEvents] = useState([]);
 
-  let filteredEvents = events.filter((event) => event.owner === currentUser.uid);
-  filteredEvents = filteredEvents.filter((event) => new Date(event.endDateTime) > new Date());
-  filteredEvents = [...filteredEvents].sort(
-    (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
-  );
+  
+  useEffect(() => {
+    if (events) {
+      let filteredEvents = events.filter((event) => event.owner === currentUser.uid);
+      filteredEvents = filteredEvents.filter((event) => new Date(event.endDateTime) > new Date());
+      filteredEvents = [...filteredEvents].sort(
+        (a, b) => new Date(a.startDateTime) - new Date(b.startDateTime)
+      );
+      setFilteredEvents(filteredEvents);
+    }
+  }, [events, currentUser.uid]);
 
   return (
     <>

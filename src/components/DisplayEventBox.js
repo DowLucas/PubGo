@@ -1,9 +1,8 @@
-import { Card, Button, Container, Title, Text, Group, Badge} from '@mantine/core';
+import { Card, Button, Text, Group, Badge, Progress} from '@mantine/core';
 import { useNavigate } from "react-router";
 
 
-export default function DisplayEventBox(props) {
-    const { event } = props
+export default function DisplayEventBox({ event }) {
     const navigate = useNavigate();
 
     const handlePageChange = () => {
@@ -45,6 +44,9 @@ export default function DisplayEventBox(props) {
         daysLeftText = `${daysLeft} days left`;
     }
 
+    let eventCount = 0
+    if(event.clicker) eventCount = event.clicker.count
+
     return (
         <Card shadow="sm" pt="xs" pb="xs" radius="md" withBorder pl="xl" pr="xl" w={350}>
             <Group position="apart">
@@ -53,9 +55,20 @@ export default function DisplayEventBox(props) {
                     {daysLeftText}
                 </Badge>
             </Group>
+            <Text c="dimmed" fz="sm" mt="md">
+                Number of guests:{' '}
+                <Text
+                span
+                fw={500}
+                sx={(theme) => ({ color: theme.colorScheme === 'dark' ? theme.white : theme.black })}
+                >
+                {eventCount}/{event.location.capacity}
+                </Text>
+                <Progress value={(eventCount / event.location.capacity) * 100} mt={5} />
+            </Text>
             <Group mt="sm" position="apart" grow>
                 <Button>Edit event</Button>           
-                <Button color='green' onClick={() => handlePageChange()}>Open clicker</Button>
+                <Button color="green" onClick={() => navigate(`/events/${event.id}/clicker`)}>Open clicker</Button>
             </Group>
         </Card>
       );

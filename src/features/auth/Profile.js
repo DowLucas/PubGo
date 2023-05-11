@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { clearUser } from "./authSlice";
-import { Button, Center, Avatar, Title, Box, ScrollArea, Stack} from "@mantine/core";
+import { Button, Center, Avatar, Title, Box, ScrollArea, Stack, Text, LoadingOverlay} from "@mantine/core";
 import { LogoMedium } from "../../components/logo/Logo";
 import DisplayEventBox from '../../components/DisplayEventBox';
 
@@ -14,6 +14,8 @@ const Profile = (props) => {
 
   const { user } = props;
   const { events } = props;
+  const [loading, setLoading] = useState(true);
+
 
   const handleLogout = async () => {
     try {
@@ -24,6 +26,16 @@ const Profile = (props) => {
       console.error("Error signing out:", error);
     }
   };
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(loadingTimeout);
+    };
+  }, []);
 
   const eventCards = events.map((event, index) => (
     <div key={event.name}>
@@ -40,9 +52,17 @@ const Profile = (props) => {
             <Title order={3} mb="xs" align="left" pl="xs">My events</Title>
             <ScrollArea bg="lightgray" h={350} pt="md" pb="md">
                 <Box>
-                    <Stack align="center">
-                    {eventCards}
-                    </Stack>
+                <Stack align="center">
+                  {loading ? (
+                    <Center height="100%">
+                       <LoadingOverlay visible overlayBlur={2} />
+                    </Center>
+                  ) : events.length > 0 ? (
+                    eventCards
+                  ) : (
+                    <Text align="center">You do not have any events.</Text>
+                  )}
+                  </Stack>
                 </Box>
             </ScrollArea>
 
