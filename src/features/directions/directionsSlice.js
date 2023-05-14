@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const directionsSlice = createSlice({
   name: "directions",
-  initialState: { currentLocation: null, arrivalDestination: null },
+  initialState: { currentLocation: null, arrivalDestination: null, triggerMapAction: 0 },
   reducers: {
     directionsCurrentLocation: (state, action) => {
       state.currentLocation = action.payload;
@@ -16,8 +16,11 @@ const directionsSlice = createSlice({
     clearDirections: () => {
       return null;
     },
+    triggerMapUpdate: (state) => {
+      state.triggerMapAction++;
+    },
   },
 });
 
-export const { directionsCurrentLocation, directionsArrivalDestination, clearDirections } = directionsSlice.actions;
+export const { directionsCurrentLocation, directionsArrivalDestination, clearDirections, triggerMapUpdate } = directionsSlice.actions;
 export default directionsSlice.reducer;

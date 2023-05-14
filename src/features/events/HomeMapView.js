@@ -28,6 +28,8 @@ const HomeMapView = (props) => {
 
   // access currentLocation state value from the Redux store
   const currentLocation = useSelector((state) => state.directions.currentLocation);
+  const triggerState = useSelector((state) => state.directions.triggerMapAction)
+  const [localTriggerState, setLocalTriggerState] = useState(triggerState);
 
   const setSelectedEvent = useSetSelectedEvent();
 
@@ -67,6 +69,13 @@ const HomeMapView = (props) => {
   }, []);
 
   useEffect(() => {
+    if (triggerState != localTriggerState) {
+      showDirections()
+      setLocalTriggerState(triggerState)
+    }
+  }, [triggerState])
+
+  useEffect(() => {
     if (isLoaded) {
       loadMarkers();
     }
@@ -98,23 +107,21 @@ const HomeMapView = (props) => {
   };
 
 
-  async function calculateRoute() {
-    try {
-      //clearRoute()
-      const directionsService = new google.maps.DirectionsService() // eslint-disable-line
-      const results = await directionsService.route({
-        origin: currentLocation,
-        destination: endLocation,
-        travelMode: google.maps.TravelMode.WALKING // eslint-disable-line
-      })
-      setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
-      setDirections(results)
-      setShowRoute(true)
-      console.log("directions: "+directions)
-    } catch (error) {
-      // Handle the error here
-      console.error("error")
-    }
+  function showDirections() {
+    calculateRoute(endLocation)
+    setShowRoute(true)
+  }
+
+  async function calculateRoute(endLocation) {
+    const directionsService = new google.maps.DirectionsService() // eslint-disable-line
+    const results = await directionsService.route({
+      origin: currentLocation,
+      destination: endLocation,
+      travelMode: google.maps.TravelMode.WALKING // eslint-disable-line
+    })
+    setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
+    setDirections(results) // unessasary
+    return results.routes[0].legs[0].distance.value
   }
 
   function clearRoute() {
@@ -124,10 +131,31 @@ const HomeMapView = (props) => {
     console.log("directions: "+directions)
   }
 
-  function handleNearestPub() {
-
+  async function handleNearestPub() {
+    let closestMarker;
+    let minimalDistance = Number.MAX_VALUE;
+    const promises = [];
+  
+    for await (const event of events) {
+      const latitude = parseFloat(event.location.lat);
+      const longitude = parseFloat(event.location.lng);
+      const distPromise = calculateRoute({ lat: latitude, lng: longitude })
+        .then(dist => {
+          console.log(minimalDistance);
+          if (dist < minimalDistance) {
+            minimalDistance = dist;
+            closestMarker = event;
+          }
+        })
+        .catch(err => console.log(err));
+      promises.push(distPromise);
+    }
+  
+    await Promise.all(promises);
+    console.log("minimal distance: " + minimalDistance);
+    console.log("closestMarker:");
+    console.log(closestMarker);
   }
-
 
   
   return (
@@ -150,7 +178,7 @@ const HomeMapView = (props) => {
           {markers}
         </GoogleMap>
       </div>
-      <button onClick={calculateRoute}>Get Directions</button>
+      <button onClick={showDirections}>Get Directions</button>
       <button onClick={handleNearestPub}>Nearest Pub</button>
       <button onClick={clearRoute}>Clear Route</button>
     </>
