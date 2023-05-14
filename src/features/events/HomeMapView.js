@@ -30,9 +30,7 @@ const HomeMapView = (props) => {
   const currentLocation = useSelector((state) => state.directions.currentLocation);
 
   const setSelectedEvent = useSetSelectedEvent();
-  // const setCurrentLocation = useSetCurrentLocation();
 
-  //const [currentLocation, setCurrentLocation] = useState(null);
   const [markers, setMarkers] = useState([]);
 
   // Directions state
@@ -101,17 +99,22 @@ const HomeMapView = (props) => {
 
 
   async function calculateRoute() {
-    //clearRoute()
-    setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
-    const directionsService = new google.maps.DirectionsService() // eslint-disable-line
-    const results = await directionsService.route({
-      origin: startLocation,
-      destination: endLocation,
-      travelMode: google.maps.TravelMode.WALKING // eslint-disable-line
-    })
-    setDirections(results)
-    setShowRoute(true)
-    console.log("directions: "+directions)
+    try {
+      //clearRoute()
+      const directionsService = new google.maps.DirectionsService() // eslint-disable-line
+      const results = await directionsService.route({
+        origin: currentLocation,
+        destination: endLocation,
+        travelMode: google.maps.TravelMode.WALKING // eslint-disable-line
+      })
+      setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
+      setDirections(results)
+      setShowRoute(true)
+      console.log("directions: "+directions)
+    } catch (error) {
+      // Handle the error here
+      console.error("error")
+    }
   }
 
   function clearRoute() {
@@ -121,25 +124,12 @@ const HomeMapView = (props) => {
     console.log("directions: "+directions)
   }
 
-  // const directionsCallback = (response) => {
-  //   console.log("respons " + response)
-  //   if (response !== null) {
-  //     setDirections(response);
-  //   }
-  // }
+  function handleNearestPub() {
 
-//   // define your event handler to set origin and destination
-// const handleDirections = () => {
-//   // set origin and destination
-//   console.log("before " + startLocation)
+  }
 
-//   //setStartLocation({ lat: 59.346415, lng: 18.067729 });
-//   //setEndLocation({ lat: 59.346707, lng: 18.072127 });
-//   setShowRoute(true);
-//   console.log("after " + showRoute)
-//   console.log("after " + directions)
-// }
 
+  
   return (
     <>
       <div className={classes.mapWrapper}>
@@ -161,6 +151,7 @@ const HomeMapView = (props) => {
         </GoogleMap>
       </div>
       <button onClick={calculateRoute}>Get Directions</button>
+      <button onClick={handleNearestPub}>Nearest Pub</button>
       <button onClick={clearRoute}>Clear Route</button>
     </>
   );
