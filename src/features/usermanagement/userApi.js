@@ -19,8 +19,41 @@ export const userApi = createApi({
             const obj = { id: childSnap.key, ...childSnap.val() };
             users.push(obj);
           });
-
+          
           return { data: users };
+        } catch (error) {
+          console.error(error.message);
+          return { error: error.message };
+        }
+      },
+      providesTags: (result, error, arg) => {
+        console.log("result", result);
+        if (result) {
+          return [
+            ...result.map(({ id }) => ({ type: "userData", id })),
+            { type: "userData", id: "LIST" },
+          ];
+        } else {
+          return ["User"];
+        }
+      },
+    }),
+    fetchSingleUser: builder.query({
+      queryFn: async (userInfo) => {
+        try {
+
+          const eventsRef = ref(database, `users/${userInfo.id}/userData`);
+          const snapshot = await get(eventsRef);
+          let userData = [];
+
+          snapshot.forEach((childSnap) => {
+            const obj = { id: childSnap.key, ...childSnap.val() };
+            userData.push(obj);
+          });
+
+          console.log(userData);
+
+          return { data: userData };
         } catch (error) {
           console.error(error.message);
           return { error: error.message };
@@ -29,36 +62,39 @@ export const userApi = createApi({
       providesTags: ["User"],
     }),
     createUser: builder.mutation({
-      queryFn: async (userData) => {
+      queryFn: async (userData, { getState }) => {
         try {
           // Convert the Date object to an ISO string
-          const updatedUserData = {
-            ...userData,
-            clicker: {
-              count: 0,
-            },
-            startDateTime: userData.startDateTime.toISOString(),
-            endDateTime: userData.endDateTime.toISOString(),
+          const user = getState().auth.user;
+          if (!user) return { data: [] };
+
+          console.log(user,"bla");
+
+          const userRef = ref(database, `users/${user.uid}/userData`);
+          // Concat the location to the end of the array of the savedLocations in the database
+          let existingUserData = [];
+
+          const snapshot = await get(userRef);
+          
+          snapshot.forEach((childSnap) => {
+            const obj = { id: childSnap.key, ...childSnap.val() };
+            existingUserData.push(obj);
+          });
+
+          const emailToFind = user.email;
+          const emailCheck = existingUserData.find(user => user.email === emailToFind);
+          if (emailCheck) {return { error: 'Email already exists' };}
+
+          const updates = {
+            email: user.email,
+            name: user.displayName,
+            kmMember: null,
+            kmAdmin: null
           };
 
-          const eventsRef = ref(database, "users");
-          const newEventRef = push(eventsRef);
+          await set(userRef, updates);
 
-          // Upload banner to Firebase Storage
-          const storage = getStorage(); // Get Firebase Storage instance
-          const storagePath = `event_banners/${newEventRef.key}`; // Set the storage path for the banner
-          const bannerRef = storageRef(storage, storagePath); // Get a reference to the banner's storage location
-
-          // Upload the banner file bytes
-          await uploadBytes(bannerRef, userData.banner);
-
-          // Set the banner URL in the event data
-          const bannerURL = await getDownloadURL(bannerRef);
-          updatedUserData.banner = bannerURL;
-
-          await set(newEventRef, updatedUserData);
-
-          return { data: { id: newEventRef.key, ...updatedUserData } };
+          return { data: { id: userRef.key, ...updates } };
         } catch (error) {
           console.error(error.message);
           return { error: error.message };
@@ -69,9 +105,15 @@ export const userApi = createApi({
     updateUser: builder.mutation({
       queryFn: async (userData) => {
         try {
-          const eventRef = ref(database, `events/${userData.id}`);
-          await update(eventRef, userData);
-          return { data: userData };
+
+          const updatedUserData = {
+            name: userData.displayName,
+            email: userData.email,
+          };
+
+          const userRef = ref(database, `users/${userData.uid}`);
+          await update(userRef, updatedUserData);
+          return { data: updatedUserData };
         } catch (error) {
           console.error(error.message);
           return { error: error.message };
@@ -84,6 +126,7 @@ export const userApi = createApi({
 
 export const {
   useFetchUserQuery,
-  //useCreateEventMutation,
-  //useUpdateEventMutation,
+  useFetchSingleUserQuery,
+  useCreateUserMutation,
+  useUpdateUserMutation,
 } = userApi;

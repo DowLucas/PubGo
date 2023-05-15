@@ -51,8 +51,10 @@ const firebaseUserToObject = (user) => {
 
 export const { setUser, setError, clearUser } = authSlice.actions;
 
+
 export const signInWithGoogle = () => async (dispatch) => {
   const provider = new GoogleAuthProvider();
+
   try {
     const result = await signInWithPopup(auth, provider);
     console.log(firebaseUserToObject(result.user));

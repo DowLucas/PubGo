@@ -1,18 +1,21 @@
 import React, { useState } from "react";
 import { 
     createStyles,
+    Flex,
     LoadingOverlay
  } from "@mantine/core";
-import Admin from "../features/usermanagement/Admin";
+import Admin from "../features/usermanagement/AdminView";
 import {useFetchUserQuery} from "../features/usermanagement/userApi.js";
 import Navbar from "../features/navbar/NavBar";
+import Logout from "../features/auth/Logout";
 
 
 const useStyles = createStyles((theme) => ({
   logoutWrapper: {
     display: "flex",
+    alignContent: "column",
     justifyContent: "center",
-    height: "100vh",
+    height: "",
   },
 }));
 
@@ -32,9 +35,19 @@ const AdminPage = () => {
   return (
     <>
       <Navbar />
-      <div className={classes.logoutWrapper}>
+      <Flex
+      //mih={50}
+      //bg="rgba(0, 0, 0, .3)"
+      gap="md"
+      justify="center"
+      align="center"
+      direction="column"
+      wrap="nowrap"
+    >
+
+      <Logout />
       <Admin users={users} />
-      </div>
+      </Flex>
     </>
   );
 };
