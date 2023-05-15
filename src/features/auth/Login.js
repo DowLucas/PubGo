@@ -10,6 +10,9 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleIcon } from "./GoogleButton";
 import { Lock, At } from "tabler-icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconCheck } from "@tabler/icons-react";
+import { useCreateUserMutation, useFetchSingleUserQuery } from "../usermanagement/userApi";
 import {
   Paper,
   Button,
@@ -41,6 +44,7 @@ const Login = (props) => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
   const { register, handleSubmit, reset } = useForm();
+  const [saveUser] = useCreateUserMutation();
 
   const dispatch = useDispatch();
 
@@ -54,10 +58,19 @@ const Login = (props) => {
 
   // Check auth
   useEffect(() => {
+    //console.log(user);
     if (user) {
+        saveUser({ payload: user })
+      .unwrap()
+      .then(() => {
+        console.log("User saved");
+      })
+      .catch((error) => {
+        console.error("Error saving user:", error);
+      });
       navigate("/");
     }
-  }, [navigate, user]);
+  }, [navigate, saveUser, user]);
 
   useEffect(() => {
     // Clear the error state when the component mounts

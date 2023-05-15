@@ -12,6 +12,7 @@ import navbarReducer from "../features/navbar/navbarSlice";
 import directionsSlice from "../features/directions/directionsSlice";
 import clickerSlice from "../features/clicker/clickerSlice";
 import { clickerApi } from "../features/clicker/clickerApi";
+import { userApi } from "../features/usermanagement/userApi";
 
 
 // Configure redux-persist with the desired storage and a key
@@ -32,6 +33,7 @@ const rootReducer = combineReducers({
   clicker: clickerSlice,
   [clickerApi.reducerPath]: clickerApi.reducer,
   [savedLocationsApi.reducerPath]: savedLocationsApi.reducer,
+  [userApi.reducerPath]: userApi.reducer,
   [eventApi.reducerPath]: eventApi.reducer,
 });
 
@@ -52,6 +54,7 @@ export const store = configureStore({
       },
     })
       .concat(eventApi.middleware)
+      .concat(userApi.middleware)
       .concat(savedLocationsApi.middleware)
       .concat(clickerApi.middleware),
 });

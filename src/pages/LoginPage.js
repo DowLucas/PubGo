@@ -5,6 +5,7 @@ import Login from "../features/auth/Login";
 const useStyles = createStyles((theme) => ({
   loginWrapper: {
     display: "flex",
+    flexDirection: "row",
     justifyContent: "center",
     height: "100vh",
   },
