@@ -86,7 +86,7 @@ const HomeMapView = (props) => {
     return () => {
       clearInterval(intervalId); // Clean up the interval when the component unmounts
     };
-  }, []);
+  }, [directions]);
   
   useEffect(() => {
     if(selectedEvent !== null) {
@@ -158,13 +158,14 @@ const HomeMapView = (props) => {
       destination: endLocation,
       travelMode: google.maps.TravelMode.WALKING // eslint-disable-line
     })
-    setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
     setDirections(results) // unesasary
+    setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
     return results.routes[0].legs[0].distance.value
   }
 
   function clearRoute() {
     setDirections(null)
+    setEndLocation(null)
     setShowRoute(false)
   }
 
