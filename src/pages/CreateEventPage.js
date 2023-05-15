@@ -222,6 +222,7 @@ const CreateEventPage = () => {
                   label="Event banner"
                   accept="image/png,image/jpeg" 
                   icon={<IconUpload size={rem(14)} />}
+                  required
                   onChange={handleBannerFileChange}
                 />
                 <Select
