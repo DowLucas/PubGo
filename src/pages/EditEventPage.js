@@ -41,7 +41,7 @@ const useStyles = createStyles((_) => ({
   },
 }));
 
-const CreateEventPage = () => {
+const EditEventPage = () => {
   const navigate = useNavigate();
 
   const [active, setActive] = useState(1);
@@ -345,4 +345,4 @@ const CreateEventPage = () => {
     </>
   );
 };
-export default CreateEventPage;
+export default EditEventPage;

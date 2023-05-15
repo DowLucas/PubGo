@@ -5,6 +5,7 @@ import PrivateRoute from "./features/auth/PrivateRoute";
 import LoginPage from "./pages/LoginPage";
 import EventsPage from "./pages/EventsPage";
 import CreateEventPage from "./pages/CreateEventPage";
+import EditEventPage from "./pages/EditEventPage";
 import Navbar from "./features/navbar/NavBar";
 import ProfilePage from "./pages/ProfilePage";
 import ClickerPage from "./pages/ClickerPage";
@@ -17,6 +18,7 @@ const AppRoutes = () => (
       <Route path="/events" element={<EventsPage />} />
       <Route path="/events/create" element={<CreateEventPage />} />
       <Route path="/events/:eventId/clicker" element={<ClickerPage />} />
+      <Route path="/events/:eventId/edit" element={<EditEventPage />}/>
     </Route>
     {/* <Route path="/" element={<AdminRoute />}>
 
