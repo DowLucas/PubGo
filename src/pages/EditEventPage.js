@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState, useEffect} from "react";
 import {
   Container,
   Text,
@@ -29,6 +29,11 @@ import CreateSavedLocations from "../components/CreateSavedLocations";
 import { notifications } from "@mantine/notifications";
 import { IconX } from "@tabler/icons-react";
 import Navbar from "../features/navbar/NavBar";
+import { useParams } from "react-router-dom";
+import { fetchEvent, selectEvent } from "../features/events/selectedEventSlice";
+import { useSetSelectedEvent } from "../features/events/actions/useSelectedEvent";
+
+
 
 const useStyles = createStyles((_) => ({
   newEventText: {
@@ -61,10 +66,24 @@ const EditEventPage = () => {
   const [opened, { open, close }] = useDisclosure(false);
   const [bannerFile, setBannerFile] = useState(null);
   const currentUser = useSelector(selectUser);
+  const { eventId } = useParams();
+  const setSelectedEvent = useSetSelectedEvent();
+
+  useEffect(() => {
+    const fetch = async () => {
+      const event = await fetchEvent(eventId);
+      setSelectedEvent(event);
+    };
+    fetch();
+  }, [eventId, setSelectedEvent]);
+
+  const selectedEvent = useSelector((state) => state.selectedEvent);
+
 
 
 
   const { classes, theme } = useStyles();
+  
   const form = useForm({
     validateInputOnChange: true,
     initialValues: {
@@ -116,7 +135,7 @@ const EditEventPage = () => {
 
     values.location = {
       ...location[0],
-      capacity: location[0].capacity, // Add the capacity to the event values
+      capacity: location[0].capacity, 
     };
 
     values.location = location[0];
@@ -128,7 +147,7 @@ const EditEventPage = () => {
     navigate("/events");
   };
 
-  if (savedLocationsLoading) {
+  if (savedLocationsLoading || !selectEvent) {
     return <LoadingOverlay visible={savedLocationsLoading} overlayBlur={2} />;
   }
 
@@ -149,7 +168,6 @@ const EditEventPage = () => {
   return (
     <>
       <Navbar />
-
       <form
         onSubmit={form.onSubmit(
           (values, _event) => {
@@ -169,7 +187,7 @@ const EditEventPage = () => {
               weight={800}
               className={classes.newEventText}
             >
-              New Event
+              Edit Event
             </Text>
             {active === 1 && (
               <Input.Wrapper>
@@ -177,7 +195,7 @@ const EditEventPage = () => {
                   className={classes.input}
                   withAsterisk
                   label="Event Name"
-                  value={form.values.name}
+                  value={selectedEvent.name}
                   placeholder={"Name of event"}
                   required
                   {...form.getInputProps("name")}
