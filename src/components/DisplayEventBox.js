@@ -67,7 +67,7 @@ export default function DisplayEventBox({ event }) {
                 <Progress value={(eventCount / event.location.capacity) * 100} mt={5} />
             </Text>
             <Group mt="sm" position="apart" grow>
-                <Button>Edit event</Button>           
+                {/*<Button>Edit event</Button> */}          
                 <Button color="green" onClick={() => navigate(`/events/${event.id}/clicker`)}>Open clicker</Button>
             </Group>
         </Card>
