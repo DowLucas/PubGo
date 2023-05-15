@@ -73,7 +73,7 @@ const Login = (props) => {
   return (
     <div>
       <Center>
-        <CustomLogo width="75%" height="75%" />
+        <CustomLogo width="40%" height="40%" />
       </Center>
       <Paper
         radius="md"
