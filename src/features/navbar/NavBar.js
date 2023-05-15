@@ -61,7 +61,7 @@ const Navbar = () => {
     <Paper className={classes.navbar} shadow="xs">
       <Container>
         <Grid gutter="md" align="center">
-          <Col span={3}>
+          <Col span={4}>
             <div
               className={navItemClass("Events")}
               onClick={() => handlePageChange("/", "Events")}
@@ -69,7 +69,7 @@ const Navbar = () => {
               <IconHome />
             </div>
           </Col>
-          <Col span={3}>
+          <Col span={4}>
             <div
               className={navItemClass("Create Event")}
               onClick={() => handlePageChange("/events/create", "Create Event")}
@@ -77,15 +77,7 @@ const Navbar = () => {
               <IconCirclePlus />
             </div>
           </Col>
-          <Col span={3}>
-            <div
-              className={classes.navItem}
-              onClick={() => console.log("Services")}
-            >
-              <IconSettings2 />
-            </div>
-          </Col>
-          <Col span={3}>
+          <Col span={4}>
             <div
               className={navItemClass("Profile")}
               onClick={() => handlePageChange("/profile", "Profile")}

@@ -16,6 +16,8 @@ const Profile = (props) => {
   const { events } = props;
   const [loading, setLoading] = useState(true);
 
+  console.log(user);
+
 
   const handleLogout = async () => {
     try {
@@ -46,9 +48,9 @@ const Profile = (props) => {
   return (
     <div>
         <Center mt={30} md={20}>
-            <Avatar color="cyan" radius="xl" size="xl">MK</Avatar>
+            <Avatar color="cyan" radius="xl" size="xl" src={user.photoURL || null}>MK</Avatar>
         </Center>
-        <Title align="center" mb={20} order={2}>{user.username || "Username"}</Title>
+        <Title align="center" mb={20} order={2}>{user.displayName || "Username"}</Title>
             <Title order={3} mb="xs" align="left" pl="xs">My events</Title>
             <ScrollArea bg="lightgray" h={350} pt="md" pb="md">
                 <Box>
