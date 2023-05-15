@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { useDisclosure } from '@mantine/hooks';
 import DisplayEventInfo from "../components/DisplayEventInfo";
 import { useSetSelectedEvent } from "../features/events/actions/useSelectedEvent";
+import { triggerDetailsUpdate } from '../features/directions/directionsSlice'
 
 
 
@@ -31,14 +32,19 @@ const EventsPage = () => {
   const setSelectedEvent = useSetSelectedEvent();
   const selectedEvent = useSelector((state) => state.selectedEvent);
 
-  useEffect(() => {
-    if (selectedEvent) {
-      open();
-    } else {
-      close();
-    }
-  }, [selectedEvent, open, close]);
+  const triggerDrawerState = useSelector((state) => state.directions.triggerDetailsAction)
+  const [localTriggerDrawerState, setLocalTriggerDrawerState] = useState(triggerDrawerState);
 
+  useEffect(() => {
+    if (triggerDrawerState != localTriggerDrawerState) {
+      if (opened) {
+        setDrawer(false)
+      } else {
+        setDrawer(true)
+      }
+      setLocalTriggerDrawerState(triggerDrawerState)
+    }
+  }, [triggerDrawerState])
 
   const toggleInfo = () => {
     setShowInfo(!showInfo);
@@ -106,15 +112,13 @@ const EventsPage = () => {
       />
       {activeTab === "map" && (
         <>
-
           <HomeMapView openDrawer={toggleInfo} events={events}/>
           <Drawer opened={selectedEvent !== null && opened} onClose={handleCloseDrawer} size="md" position="bottom" withCloseButton={true}>
             <DisplayEventInfo event={selectedEvent} />
           </Drawer>
-
         </>
       )}
-      {activeTab === "list" && <HomeListView events={events} />}
+      {activeTab === "list" && <HomeListView events={events} setActiveTab={setActiveTab}/>}
     </div>
   );
 };

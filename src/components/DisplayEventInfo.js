@@ -2,8 +2,18 @@ import React from "react";
 import { Card, Text, Badge, Group, Divider, Spoiler, Button } from "@mantine/core";
 import { MantineLogo } from "@mantine/ds";
 import BusyBar from "./BusyBar";
+import { useDispatch, useSelector } from "react-redux";
+import { triggerDetailsUpdate, triggerMapUpdate } from '../features/directions/directionsSlice';
 
 export default function DisplayEventInfo(props) {
+  const dispatch = useDispatch()
+
+  function triggerShowDirections() {
+    console.log("ping")
+    dispatch(triggerMapUpdate())
+    dispatch(triggerDetailsUpdate())
+  }
+
   const event = props.event;
   if(!event) return;
 
@@ -42,6 +52,7 @@ export default function DisplayEventInfo(props) {
       daysLeftText = `${daysLeft} days left`;
   }
 
+
   return (
     <div>
       <Group position="apart" mb="xs">
@@ -66,8 +77,8 @@ export default function DisplayEventInfo(props) {
       <Divider mt="md" mb="md" />
       <BusyBar busyLevel={51} />
       <Divider mt="md" mb="md" />
-      <Button variant="light" color="blue" fullWidth mt="md" radius="md">
-              Get directions
+      <Button variant="light" color="blue" fullWidth mt="md" radius="md" onClick={triggerShowDirections}>
+        Get directions
       </Button>
     </div>
   );

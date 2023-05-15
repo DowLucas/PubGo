@@ -12,6 +12,7 @@ import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
 import { useDispatch, useSelector } from "react-redux";
 import { directionsCurrentLocation } from "../directions/directionsSlice";
+import { triggerDetailsUpdate } from '../directions/directionsSlice';
 
 const useStyles = createStyles((theme) => ({
   mapWrapper: {
@@ -32,8 +33,11 @@ const HomeMapView = (props) => {
 
   // access currentLocation state value from the Redux store
   const currentLocation = useSelector((state) => state.directions.currentLocation);
-  const triggerState = useSelector((state) => state.directions.triggerMapAction)
+  
+  const triggerState = useSelector((state) => state.directions.triggerMapAction);
   const [localTriggerState, setLocalTriggerState] = useState(triggerState);
+
+  const selectedEvent = useSelector((state) => state.selectedEvent);
 
   const setSelectedEvent = useSetSelectedEvent();
 
@@ -77,20 +81,29 @@ const HomeMapView = (props) => {
     // Run fetchLocation immediately on the first render
     fetchLocation();
   
-    const intervalId = setInterval(fetchLocation, 10000); // Run fetchLocation every 10 seconds
+    const intervalId = setInterval(fetchLocation, 5000); // Run fetchLocation every 5 seconds
   
     return () => {
       clearInterval(intervalId); // Clean up the interval when the component unmounts
     };
   }, []);
   
-  
-
   useEffect(() => {
-    if (triggerState != localTriggerState) {
-      showDirections()
-      setLocalTriggerState(triggerState)
+    if(selectedEvent !== null) {
+      setSelectedEvent(selectedEvent)
+      const latitude = parseFloat(selectedEvent.location.lat);
+      const longitude = parseFloat(selectedEvent.location.lng);
+      setEndLocation({ lat: latitude, lng: longitude })
+      console.log(endLocation)
+      console.log({ lat: latitude, lng: longitude })
+      clearRoute()
+      calculateRoute({ lat: latitude, lng: longitude })
+      setShowRoute(true)
     }
+    
+    setLocalTriggerState(triggerState)
+
+    console.log("Try to show directions")
   }, [triggerState])
 
   useEffect(() => {
@@ -103,12 +116,15 @@ const HomeMapView = (props) => {
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 
-
+  function triggerDrawerOpen() {
+      console.log("ping3")
+      dispatch(triggerDetailsUpdate())
+  }
 
   const loadMarkers = () => {
     if (!events) return null;
     let markers = [];
-
+    
     const filteredEvents = events.filter((event) => new Date(event.endDateTime) > new Date());
 
     filteredEvents.forEach((event) => {
@@ -120,7 +136,7 @@ const HomeMapView = (props) => {
           key={event.id}
           position={{ lat: latitude, lng: longitude }}
           clickable
-          onClick={() => {setSelectedEvent(event); setMarkerClicked(true); setEndLocation({ lat: latitude, lng: longitude })}}
+          onClick={() => {setSelectedEvent(event); triggerDrawerOpen(); setMarkerClicked(true); setEndLocation({ lat: latitude, lng: longitude })}}
         />
       );
     });
@@ -129,6 +145,8 @@ const HomeMapView = (props) => {
   };
 
   async function showDirections() {
+    console.log("Show directions")
+    clearRoute()
     await calculateRoute(endLocation)
     setShowRoute(true)
   }
@@ -151,10 +169,14 @@ const HomeMapView = (props) => {
   }
 
   function findNearestMarker(currentLocation) {
+    if (!events) return null;
+    
+    const filteredEvents = events.filter((event) => new Date(event.endDateTime) > new Date());
+
     let nearestMarker = null;
     let shortestDistance = Number.MAX_SAFE_INTEGER;
 
-    events.forEach((event) => {
+    filteredEvents.forEach((event) => {
       const latitude = parseFloat(event.location.lat);
       const longitude = parseFloat(event.location.lng);
       const markerLocation = { lat: latitude, lng: longitude }
@@ -180,6 +202,7 @@ const HomeMapView = (props) => {
   };
 
   function handleNearestPub() {
+    triggerDrawerOpen()
     clearRoute()
     const nearestMarker = findNearestMarker(currentLocation)
     if (nearestMarker) {
@@ -189,14 +212,11 @@ const HomeMapView = (props) => {
 
       setEndLocation(markerLocation)
       setSelectedEvent(nearestMarker)
-      calculateRoute(markerLocation)
-      setShowRoute(true)
+      //calculateRoute(markerLocation)
+      //setShowRoute(true)
     }
   };
   
-  const handleMapClick = () => {
-    setSelectedEvent(null);
-  };
 
   return (
     <>
@@ -217,12 +237,11 @@ const HomeMapView = (props) => {
             height: "100%",
           }}
           onClick={() => {
-            handleMapClick()
             setMarkerClicked(false)
             }}
         >
           
-          <div style={{ position: "absolute", bottom: "0", left: "0", zIndex: "1" }}>
+          <div style={{ position: "absolute", top: "0", right: "0", zIndex: "1" }}>
             <Button onClick={handleNearestPub}>Nearest Pub</Button>
             <Button color="orange" onClick={clearRoute}>x</Button>
           </div>
