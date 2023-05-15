@@ -64,7 +64,7 @@ const Navbar = () => {
           <Col span={3}>
             <div
               className={navItemClass("Events")}
-              onClick={() => handlePageChange("/events", "Events")}
+              onClick={() => handlePageChange("/", "Events")}
             >
               <IconHome />
             </div>

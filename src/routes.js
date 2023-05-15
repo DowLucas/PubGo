@@ -12,9 +12,8 @@ import ClickerPage from "./pages/ClickerPage";
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<PrivateRoute />}>
-      <Route index element={<App />} />
+      <Route index element={<EventsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
-      <Route path="/events" element={<EventsPage />} />
       <Route path="/events/create" element={<CreateEventPage />} />
       <Route path="/events/:eventId/clicker" element={<ClickerPage />} />
     </Route>
