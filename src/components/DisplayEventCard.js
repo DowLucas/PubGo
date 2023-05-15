@@ -1,12 +1,29 @@
 import { Card, Image, Text, Badge, Button, Group, Container, Spoiler, Divider, Progress} from '@mantine/core';
 import { MantineLogo } from "@mantine/ds";
 import BusyBar from './BusyBar';
-
-
+import { useDispatch, useSelector } from "react-redux";
+import { triggerDetailsUpdate, triggerMapUpdate } from '../features/directions/directionsSlice';
+import { act } from 'react-dom/test-utils';
+import { useSetSelectedEvent } from "../features/events/actions/useSelectedEvent";
 
 export default function DisplayEventCard(props) {
-    const { event } = props
+  const dispatch = useDispatch()
+  const setSelectedEvent = useSetSelectedEvent();
 
+  const { event, setActiveTab } = props
+
+  const handleTabChange = (value) => {
+    setActiveTab(value);
+  };
+
+  function triggerShowDirections() {
+    console.log("ping")
+    handleTabChange("map")
+    console.log("ping")
+    dispatch(triggerMapUpdate())
+    setSelectedEvent(event)
+  }  
+  
     const eventStartDate = new Date(event.startDateTime);
     const eventEndDate = new Date(event.endDateTime);
     const today = new Date();
@@ -108,7 +125,7 @@ export default function DisplayEventCard(props) {
 
             )}
             {/**This button should give directions*/}
-            <Button variant="light" color="blue" fullWidth mt="md" radius="md">
+            <Button variant="light" color="blue" fullWidth mt="md" radius="md" onClick={triggerShowDirections}>
               Get directions
             </Button>
           </Card>

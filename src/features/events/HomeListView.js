@@ -3,7 +3,7 @@ import { Table, Loader, SimpleGrid } from '@mantine/core';
 import DisplayEventCard from '../../components/DisplayEventCard';
 
 const HomeListView = (props) => {
-    const { events } = props;
+    const { events, setActiveTab } = props;
 
         
     // THIS CODE CAN BE USED TO FETCH ADRESS
@@ -36,7 +36,7 @@ const HomeListView = (props) => {
 
     const rows = sortedEvents.map((event, index) => (
       <div key={event.name}>
-        <DisplayEventCard event={event} />
+        <DisplayEventCard event={event} setActiveTab={setActiveTab}/>
       </div>
     ));
 
