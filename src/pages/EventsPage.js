@@ -106,6 +106,7 @@ const EventsPage = () => {
       />
       {activeTab === "map" && (
         <>
+
           <HomeMapView openDrawer={toggleInfo} events={events}/>
           <Drawer opened={selectedEvent !== null} onClose={handleCloseDrawer} size="md" position="bottom" withCloseButton={false}>
             <DisplayEventInfo event={selectedEvent} />
