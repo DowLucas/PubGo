@@ -7,7 +7,7 @@ import {
   DirectionsService,
   DirectionsRenderer,
 } from "@react-google-maps/api";
-import { LoadingOverlay, createStyles, Button } from "@mantine/core";
+import { LoadingOverlay, createStyles, Button, Space } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +16,11 @@ import { directionsCurrentLocation } from "../directions/directionsSlice";
 const useStyles = createStyles((theme) => ({
   mapWrapper: {
     width: "100vw",
-    height: "60vh",
+    height: "90vh",
+    transition: "height 0.5s ease",
+  },
+  mapWrapperMarkerClicked: {
+    height: "100vh",
   },
 }));
 
@@ -34,6 +38,7 @@ const HomeMapView = (props) => {
   const setSelectedEvent = useSetSelectedEvent();
 
   const [markers, setMarkers] = useState([]);
+  const [markerClicked, setMarkerClicked] = useState(false);
 
   // Directions state
   const [directions, setDirections] = useState(null);
@@ -98,11 +103,15 @@ const HomeMapView = (props) => {
     return <LoadingOverlay visible overlayBlur={2} />;
   }
 
+
+
   const loadMarkers = () => {
     if (!events) return null;
     let markers = [];
 
-    events.forEach((event) => {
+    const filteredEvents = events.filter((event) => new Date(event.endDateTime) > new Date());
+
+    filteredEvents.forEach((event) => {
       const latitude = parseFloat(event.location.lat);
       const longitude = parseFloat(event.location.lng);
 
@@ -111,7 +120,7 @@ const HomeMapView = (props) => {
           key={event.id}
           position={{ lat: latitude, lng: longitude }}
           clickable
-          onClick={() => {setSelectedEvent(event); setEndLocation({ lat: latitude, lng: longitude })}}
+          onClick={() => {setSelectedEvent(event); setMarkerClicked(true); setEndLocation({ lat: latitude, lng: longitude })}}
         />
       );
     });
@@ -183,12 +192,18 @@ const HomeMapView = (props) => {
       calculateRoute(markerLocation)
       setShowRoute(true)
     }
-  }
+  };
   
-  
+  const handleMapClick = () => {
+    setSelectedEvent(null);
+  };
+
   return (
     <>
-      <div className={classes.mapWrapper}>
+      <div className={`${classes.mapWrapper} ${
+          markerClicked ? classes.mapWrapperMarkerClicked : ""
+        }`}>
+        <Space h="5vh"/>
         <GoogleMap
           options={{
             styles: mapStyles,
@@ -201,6 +216,10 @@ const HomeMapView = (props) => {
             width: "100%",
             height: "100%",
           }}
+          onClick={() => {
+            handleMapClick()
+            setMarkerClicked(false)
+            }}
         >
           
           <div style={{ position: "absolute", bottom: "0", left: "0", zIndex: "1" }}>
@@ -211,6 +230,7 @@ const HomeMapView = (props) => {
           {showRoute && directions && <DirectionsRenderer directions={directions}/>}
           {markers}
         </GoogleMap>
+        <Space h="5vh"/>
       </div>
     </>
   );

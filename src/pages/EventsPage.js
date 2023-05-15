@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import HomeMapView from "../features/events/HomeMapView";
-import { Box, Button, Center } from "@mantine/core";
+import HomeListView from "../features/events/HomeListView"
+import { Box, Button, Center, Drawer, Space} from "@mantine/core";
 import { SegmentedControl } from "@mantine/core";
 import { IconPhoto, IconMessageCircle, IconEye } from "@tabler/icons-react";
 import SelectedEventMapView from "../features/events/SelectedEventMapView";
@@ -9,6 +10,14 @@ import {
   useFetchEventsQuery,
 } from "../features/events/eventSlice";
 import NavBar from "../features/navbar/NavBar";
+import { useSelector } from "react-redux";
+import { useDisclosure } from '@mantine/hooks';
+import DisplayEventInfo from "../components/DisplayEventInfo";
+import { useSetSelectedEvent } from "../features/events/actions/useSelectedEvent";
+
+
+
+
 
 const EventsPage = () => {
   const [showInfo, setShowInfo] = useState(false);
@@ -17,6 +26,19 @@ const EventsPage = () => {
   const { data: events, error, isLoading } = useFetchEventsQuery();
   const [createEvent, { isSuccess: createEventSuccess }] =
     useCreateEventMutation();
+  const [opened, { open, close }] = useDisclosure(false);
+
+  const setSelectedEvent = useSetSelectedEvent();
+  const selectedEvent = useSelector((state) => state.selectedEvent);
+
+  useEffect(() => {
+    if (selectedEvent) {
+      open();
+    } else {
+      close();
+    }
+  }, [selectedEvent, open, close]);
+
 
   const toggleInfo = () => {
     setShowInfo(!showInfo);
@@ -47,10 +69,15 @@ const EventsPage = () => {
     createEvent(newEvent);
   };
 
+  const handleCloseDrawer = () => {
+    setSelectedEvent(null);
+  };
+
   return (
     <div>
       <NavBar />
       <SegmentedControl
+      style={{ position: "fixed", top: "0px", left: "0", right: "0", zIndex: "999" }}
         data={[
           {
             value: "map",
@@ -79,11 +106,15 @@ const EventsPage = () => {
       />
       {activeTab === "map" && (
         <>
-          <HomeMapView openDrawer={toggleInfo} events={events} />
-          <SelectedEventMapView />
+
+          <HomeMapView openDrawer={toggleInfo} events={events}/>
+          <Drawer opened={selectedEvent !== null} onClose={handleCloseDrawer} size="md" position="bottom" withCloseButton={false}>
+            <DisplayEventInfo event={selectedEvent} />
+          </Drawer>
+
         </>
       )}
-      {activeTab === "list" && <div>Messages tab content</div>}
+      {activeTab === "list" && <HomeListView events={events} />}
     </div>
   );
 };

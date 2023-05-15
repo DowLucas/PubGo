@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase";
 import { login, logout } from "./authThunks";
 
@@ -59,6 +59,17 @@ export const signInWithGoogle = () => async (dispatch) => {
     dispatch(setUser(firebaseUserToObject(result.user)));
   } catch (error) {
     dispatch(setError(error.message));
+  }
+};
+
+export const signInWithPassword = (email,password) => async (dispatch) => {
+  try {
+    const result = await signInWithEmailAndPassword(auth,email,password);
+    console.log(firebaseUserToObject(result.user));
+    dispatch(setUser(firebaseUserToObject(result.user)));
+  } catch (error) {
+    dispatch(setError(error.message));
+    console.log(error.message);
   }
 };
 

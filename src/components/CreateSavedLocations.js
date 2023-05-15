@@ -55,6 +55,8 @@ const CreateSavedLocations = (props) => {
 
   const [saveLocation] = useCreateSavedLocationMutation();
 
+  const [capacity, setCapacity] = React.useState("")
+
   const { classes } = useStyles();
   const { opened, close } = props;
 
@@ -65,6 +67,7 @@ const CreateSavedLocations = (props) => {
   useEffect(() => {
     setMarker(null);
     setLocationName("");
+    setCapacity("");
   }, [opened]);
 
   const onSaveLocation = () => {
@@ -76,6 +79,7 @@ const CreateSavedLocations = (props) => {
       name: locationName,
       lat: marker.lat,
       lng: marker.lng,
+      capacity: capacity
     };
 
     saveLocation({ payload: locationObject })
@@ -111,7 +115,7 @@ const CreateSavedLocations = (props) => {
           libraries={libraries}
         />
       ) : null}
-      <Modal opened={opened} onClose={close} title="Create Location" centered>
+      <Modal opened={opened} onClose={close} centered withCloseButton={false}>
         <TextInput
           className={classes.input}
           withAsterisk
@@ -122,6 +126,15 @@ const CreateSavedLocations = (props) => {
           }}
           placeholder={"The name of the location"}
           required
+        />
+        <TextInput
+          className={classes.input}
+          label="Location capacity"
+          value={capacity}
+          onChange={(e) => {
+            setCapacity(e.currentTarget.value);
+          }}
+          placeholder="Set capacity (optional*)"
         />
         <GoogleMap
           options={mapOptions}
@@ -142,6 +155,7 @@ const CreateSavedLocations = (props) => {
             />
           )}
         </GoogleMap>
+
         <Group position="center" mt={rem(20)}>
           <Button onClick={onSaveLocation}>Save</Button>
           <Button onClick={close} color="red">
