@@ -128,7 +128,7 @@ const CreateEventPage = () => {
 
 
     await createEvent(values);
-    navigate("/events");
+    navigate("/");
   };
 
   if (savedLocationsLoading) {

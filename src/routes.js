@@ -6,16 +6,14 @@ import LoginPage from "./pages/LoginPage";
 import EventsPage from "./pages/EventsPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import Navbar from "./features/navbar/NavBar";
-import LogoutPage from "./pages/LogoutPage";
+import ProfilePage from "./pages/ProfilePage";
 import ClickerPage from "./pages/ClickerPage";
 import AdminPage from "./pages/AdminPage";
 
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<PrivateRoute />}>
-      <Route index element={<App />} />
-      <Route path="/logout" element={<LogoutPage />} />
-      <Route path="/events" element={<EventsPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="/events/create" element={<CreateEventPage />} />
       <Route path="/events/:eventId/clicker" element={<ClickerPage />} />
       <Route path="/admin" element={<AdminPage />} />
@@ -23,6 +21,7 @@ const AppRoutes = () => (
     {/* <Route path="/" element={<AdminRoute />}>
 
     </Route> */}
+    <Route index element={<EventsPage />} />
     <Route path="/login" element={<LoginPage />} />
   </Routes>
 );

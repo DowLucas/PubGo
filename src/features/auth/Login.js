@@ -1,10 +1,15 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import { signInWithGoogle, signInWithPassword, selectError, setError } from "./authSlice";
+import {
+  signInWithGoogle,
+  signInWithPassword,
+  selectError,
+  setError,
+} from "./authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { GoogleIcon } from "./GoogleButton";
-import { Lock, At } from 'tabler-icons-react';
+import { Lock, At } from "tabler-icons-react";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import { useCreateUserMutation, useFetchSingleUserQuery } from "../usermanagement/userApi";
@@ -47,8 +52,8 @@ const Login = (props) => {
     dispatch(signInWithGoogle());
   };
 
-  const handleSignInWithPassword = userData => {
-    dispatch(signInWithPassword(userData.email,userData.password));
+  const handleSignInWithPassword = (userData) => {
+    dispatch(signInWithPassword(userData.email, userData.password));
   };
 
   // Check auth
@@ -63,7 +68,7 @@ const Login = (props) => {
       .catch((error) => {
         console.error("Error saving user:", error);
       });
-      navigate("/events");
+      navigate("/");
     }
   }, [navigate, saveUser, user]);
 
@@ -73,7 +78,7 @@ const Login = (props) => {
   }, [dispatch]);
 
   useEffect(() => {
-    if(error) {
+    if (error) {
       reset();
     }
   }, [reset, error]);
@@ -81,7 +86,7 @@ const Login = (props) => {
   return (
     <div>
       <Center>
-        <CustomLogo width="75%" height="75%" />
+        <CustomLogo width="40%" height="40%" />
       </Center>
       <Paper
         radius="md"
@@ -96,19 +101,36 @@ const Login = (props) => {
           Welcome to PubGo
         </Text>
 
-        <Text size="md" color="gray">Login with Google:</Text>
+        <Text size="md" color="gray">
+          Login with Google:
+        </Text>
         <Group grow mb="md" mt="md">
           <GoogleButton onClick={handleSignInWithGoogle} radius="xl">
             Google
           </GoogleButton>
         </Group>
-        <Text size="md" color="gray">Login with Email & Password:</Text>
+        <Text size="md" color="gray">
+          Login with Email & Password:
+        </Text>
         <form onSubmit={handleSubmit(handleSignInWithPassword)}>
-            {error && <Text color="red">{error}</Text>}
-            <Input {...register("email")} icon={<At />} placeholder="Email" label="Email *" Required />
-            <Input {...register("password")} icon={<Lock />} placeholder="Password" type="password" label="Password *" Required/>
-            <Button type = "submit">Login</Button>
-          </form>
+          {error && <Text color="red">{error}</Text>}
+          <Input
+            {...register("email")}
+            icon={<At />}
+            placeholder="Email"
+            label="Email *"
+            Required
+          />
+          <Input
+            {...register("password")}
+            icon={<Lock />}
+            placeholder="Password"
+            type="password"
+            label="Password *"
+            Required
+          />
+          <Button type="submit">Login</Button>
+        </form>
 
         <Divider label="Please Read T&C" labelPosition="center" my="lg" />
 

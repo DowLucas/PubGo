@@ -52,7 +52,7 @@ const Navbar = () => {
     console.log(path, activePage);
   }, []);
 
-  console.log("activePage", activePage);
+  //console.log("activePage", activePage);
 
   const navItemClass = (page) =>
     `${classes.navItem} ${activePage === page ? classes.active : ""}`;
@@ -61,15 +61,15 @@ const Navbar = () => {
     <Paper className={classes.navbar} shadow="xs">
       <Container>
         <Grid gutter="md" align="center">
-          <Col span={3}>
+          <Col span={4}>
             <div
               className={navItemClass("Events")}
-              onClick={() => handlePageChange("/events", "Events")}
+              onClick={() => handlePageChange("/", "Events")}
             >
               <IconHome />
             </div>
           </Col>
-          <Col span={3}>
+          <Col span={4}>
             <div
               className={navItemClass("Create Event")}
               onClick={() => handlePageChange("/events/create", "Create Event")}
@@ -77,18 +77,10 @@ const Navbar = () => {
               <IconCirclePlus />
             </div>
           </Col>
-          <Col span={3}>
+          <Col span={4}>
             <div
-              className={classes.navItem}
-              onClick={() => console.log("Services")}
-            >
-              <IconSettings2 />
-            </div>
-          </Col>
-          <Col span={3}>
-            <div
-              className={navItemClass("Logout")}
-              onClick={() => handlePageChange("/logout", "Logout")}
+              className={navItemClass("Profile")}
+              onClick={() => handlePageChange("/profile", "Profile")}
             >
               <IconUsersGroup />
             </div>

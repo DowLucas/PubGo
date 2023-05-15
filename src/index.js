@@ -15,20 +15,18 @@ const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <MantineProvider
-          theme={{ colorScheme: "light" }}
-          withGlobalStyles
-          withNormalizeCSS
-        >
-          <Notifications />
-          <AppRoutes />
-        </MantineProvider>
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <BrowserRouter>
+      <MantineProvider
+        theme={{ colorScheme: "light" }}
+        withGlobalStyles
+        withNormalizeCSS
+      >
+        <Notifications />
+        <AppRoutes />
+      </MantineProvider>
+    </BrowserRouter>
+  </Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

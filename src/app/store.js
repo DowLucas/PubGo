@@ -9,9 +9,11 @@ import selectedEventSlice from "../features/events/selectedEventSlice";
 import { savedLocationsApi } from "../features/events/savedLocationsApi";
 import savedLocationsReducer from "../features/events/savedLocationsSlice";
 import navbarReducer from "../features/navbar/navbarSlice";
+import directionsSlice from "../features/directions/directionsSlice";
 import clickerSlice from "../features/clicker/clickerSlice";
 import { clickerApi } from "../features/clicker/clickerApi";
 import { userApi } from "../features/usermanagement/userApi";
+
 
 // Configure redux-persist with the desired storage and a key
 const persistConfig = {
@@ -27,6 +29,7 @@ const rootReducer = combineReducers({
   selectedEvent: selectedEventSlice,
   savedLocations: savedLocationsReducer,
   navbar: navbarReducer,
+  directions: directionsSlice,
   clicker: clickerSlice,
   [clickerApi.reducerPath]: clickerApi.reducer,
   [savedLocationsApi.reducerPath]: savedLocationsApi.reducer,
