@@ -26,7 +26,7 @@ const EventsPage = () => {
   const { data: events, error, isLoading } = useFetchEventsQuery();
   const [createEvent, { isSuccess: createEventSuccess }] =
     useCreateEventMutation();
-  const [opened, { open, close }] = useDisclosure(false);
+  const [opened, setDrawer] = useState(false);
 
   const setSelectedEvent = useSetSelectedEvent();
   const selectedEvent = useSelector((state) => state.selectedEvent);
@@ -70,7 +70,7 @@ const EventsPage = () => {
   };
 
   const handleCloseDrawer = () => {
-    setSelectedEvent(null);
+    setDrawer(false)
   };
 
   return (
@@ -108,7 +108,7 @@ const EventsPage = () => {
         <>
 
           <HomeMapView openDrawer={toggleInfo} events={events}/>
-          <Drawer opened={selectedEvent !== null} onClose={handleCloseDrawer} size="md" position="bottom" withCloseButton={false}>
+          <Drawer opened={selectedEvent !== null && opened} onClose={handleCloseDrawer} size="md" position="bottom" withCloseButton={true}>
             <DisplayEventInfo event={selectedEvent} />
           </Drawer>
 
