@@ -19,7 +19,7 @@ const AppRoutes = () => (
     {/* <Route path="/" element={<AdminRoute />}>
 
     </Route> */}
-    <Route index element={<EventsPage />} />
+    <Route index path="/events" element={<EventsPage />} />
     <Route path="/login" element={<LoginPage />} />
   </Routes>
 );
