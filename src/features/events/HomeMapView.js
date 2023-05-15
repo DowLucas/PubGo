@@ -7,7 +7,7 @@ import {
   DirectionsService,
   DirectionsRenderer,
 } from "@react-google-maps/api";
-import { LoadingOverlay, createStyles } from "@mantine/core";
+import { LoadingOverlay, createStyles, Button } from "@mantine/core";
 import { useSetSelectedEvent } from "./actions/useSelectedEvent";
 import { KTHCenter, mapStyles } from "../../utils/const";
 import { useDispatch, useSelector } from "react-redux";
@@ -53,20 +53,33 @@ const HomeMapView = (props) => {
   });
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          dispatch(directionsCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          }));
-        },
-        () => console.error("Could not fetch location, check permissions.")
-      );
-    } else {
-      alert("Geolocation not supported");
-    }
+    const fetchLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            dispatch(directionsCurrentLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            }));
+          },
+          () => console.error("Could not fetch location, check permissions.")
+        );
+      } else {
+        alert("Geolocation not supported");
+      }
+    };
+  
+    // Run fetchLocation immediately on the first render
+    fetchLocation();
+  
+    const intervalId = setInterval(fetchLocation, 10000); // Run fetchLocation every 10 seconds
+  
+    return () => {
+      clearInterval(intervalId); // Clean up the interval when the component unmounts
+    };
   }, []);
+  
+  
 
   useEffect(() => {
     if (triggerState != localTriggerState) {
@@ -106,9 +119,8 @@ const HomeMapView = (props) => {
     setMarkers(markers);
   };
 
-
-  function showDirections() {
-    calculateRoute(endLocation)
+  async function showDirections() {
+    await calculateRoute(endLocation)
     setShowRoute(true)
   }
 
@@ -120,43 +132,59 @@ const HomeMapView = (props) => {
       travelMode: google.maps.TravelMode.WALKING // eslint-disable-line
     })
     setStartLocation(currentLocation) //{lat:59.3461268, lng:18.071562}
-    setDirections(results) // unessasary
+    setDirections(results) // unesasary
     return results.routes[0].legs[0].distance.value
   }
 
   function clearRoute() {
-    console.log("directions: "+directions)
-    //DirectionsRenderer.setMap(null)
     setDirections(null)
-    console.log("directions: "+directions)
+    setShowRoute(false)
   }
 
-  async function handleNearestPub() {
-    let closestMarker;
-    let minimalDistance = Number.MAX_VALUE;
-    const promises = [];
-  
-    for await (const event of events) {
+  function findNearestMarker(currentLocation) {
+    let nearestMarker = null;
+    let shortestDistance = Number.MAX_SAFE_INTEGER;
+
+    events.forEach((event) => {
       const latitude = parseFloat(event.location.lat);
       const longitude = parseFloat(event.location.lng);
-      const distPromise = calculateRoute({ lat: latitude, lng: longitude })
-        .then(dist => {
-          console.log(minimalDistance);
-          if (dist < minimalDistance) {
-            minimalDistance = dist;
-            closestMarker = event;
-          }
-        })
-        .catch(err => console.log(err));
-      promises.push(distPromise);
-    }
+      const markerLocation = { lat: latitude, lng: longitude }
+      const R = 6371; // Radius of the earth in km
+      const dLat = ((markerLocation.lat - currentLocation.lat) * Math.PI) / 180;
+      const dLon = ((markerLocation.lng - currentLocation.lng) * Math.PI) / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((currentLocation.lat * Math.PI) / 180) *
+          Math.cos((markerLocation.lat * Math.PI) / 180) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c * 1000; // Distance in meters
   
-    await Promise.all(promises);
-    console.log("minimal distance: " + minimalDistance);
-    console.log("closestMarker:");
-    console.log(closestMarker);
-  }
+      if (distance < shortestDistance) {
+        shortestDistance = distance;
+        nearestMarker = event;
+      }
+    });
+  
+    return nearestMarker;
+  };
 
+  function handleNearestPub() {
+    clearRoute()
+    const nearestMarker = findNearestMarker(currentLocation)
+    if (nearestMarker) {
+      const latitude = parseFloat(nearestMarker.location.lat);
+      const longitude = parseFloat(nearestMarker.location.lng);
+      const markerLocation = { lat: latitude, lng: longitude }
+
+      setEndLocation(markerLocation)
+      setSelectedEvent(nearestMarker)
+      calculateRoute(markerLocation)
+      setShowRoute(true)
+    }
+  }
+  
   
   return (
     <>
@@ -174,13 +202,16 @@ const HomeMapView = (props) => {
             height: "100%",
           }}
         >
+          
+          <div style={{ position: "absolute", bottom: "0", left: "0", zIndex: "1" }}>
+            <Button onClick={handleNearestPub}>Nearest Pub</Button>
+            <Button color="orange" onClick={clearRoute}>x</Button>
+          </div>
+          
           {showRoute && directions && <DirectionsRenderer directions={directions}/>}
           {markers}
         </GoogleMap>
       </div>
-      <button onClick={showDirections}>Get Directions</button>
-      <button onClick={handleNearestPub}>Nearest Pub</button>
-      <button onClick={clearRoute}>Clear Route</button>
     </>
   );
 };
