@@ -134,7 +134,8 @@ const CreateSavedLocations = (props) => {
           onChange={(e) => {
             setCapacity(e.currentTarget.value);
           }}
-          placeholder="Set capacity (optional*)"
+          required
+          placeholder="Set capacity"
         />
         <GoogleMap
           options={mapOptions}

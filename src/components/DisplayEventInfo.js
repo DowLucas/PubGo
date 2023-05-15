@@ -53,6 +53,13 @@ export default function DisplayEventInfo(props) {
   }
 
 
+  let eventBusyLevel = 75
+  let eventCount = 75
+  if(event.clicker) {
+    eventBusyLevel = Math.floor(event.clicker.count/event.location.capacity)*100;
+    eventCount = event.clicker.count;
+  }
+
   return (
     <div>
       <Group position="apart" mb="xs">
@@ -75,7 +82,24 @@ export default function DisplayEventInfo(props) {
               {event.description}
       </Spoiler>
       <Divider mt="md" mb="md" />
-      <BusyBar busyLevel={51} />
+      
+      {event.showEventBusyness && isEventToday && (
+      <div style={{marginBottom: "10px", marginTop: "10px"}}>
+        <BusyBar busyLevel={eventBusyLevel} />
+      </div>)}
+
+      {event.showNumberOfGuests && isEventToday &&(
+      <div>
+        <Text fz="sm" mt="md">
+          Current number of guests:{' '}
+          <Text span fw={500}>
+            {eventCount}/{event.capacity}
+          </Text>
+        </Text>
+      </div>
+
+      )}
+
       <Divider mt="md" mb="md" />
       <Button variant="light" color="blue" fullWidth mt="md" radius="md" onClick={triggerShowDirections}>
         Get directions
