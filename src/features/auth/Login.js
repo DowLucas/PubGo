@@ -12,7 +12,10 @@ import { GoogleIcon } from "./GoogleButton";
 import { Lock, At } from "tabler-icons-react";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
-import { useCreateUserMutation, useFetchSingleUserQuery } from "../usermanagement/userApi";
+import {
+  useCreateUserMutation,
+  useFetchSingleUserQuery,
+} from "../usermanagement/userApi";
 import {
   Paper,
   Button,
@@ -60,14 +63,14 @@ const Login = (props) => {
   useEffect(() => {
     //console.log(user);
     if (user) {
-        saveUser({ payload: user })
-      .unwrap()
-      .then(() => {
-        console.log("User saved");
-      })
-      .catch((error) => {
-        console.error("Error saving user:", error);
-      });
+      saveUser({ payload: user })
+        .unwrap()
+        .then(() => {
+          console.log("User saved");
+        })
+        .catch((error) => {
+          console.error("Error saving user:", error);
+        });
       navigate("/");
     }
   }, [navigate, saveUser, user]);
@@ -136,6 +139,16 @@ const Login = (props) => {
 
         <Link to="/terms">Terms and Conditions</Link>
       </Paper>
+      <Center>
+        <Button
+          variant="link"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          <Text color="gray">Back to Map</Text>
+        </Button>
+      </Center>
     </div>
   );
 };
