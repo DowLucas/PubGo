@@ -4,7 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { clearUser } from "../auth/authSlice";
-import { Button, Center, Group, Paper, Text, Loader, SimpleGrid, Badge, ScrollArea, ActionIcon, Menu, } from "@mantine/core";
+import {
+  Button,
+  Center,
+  Group,
+  Paper,
+  Text,
+  Loader,
+  SimpleGrid,
+  Badge,
+  ScrollArea,
+  ActionIcon,
+  Menu,
+  Divider,
+  Space,
+} from "@mantine/core";
 import { LogoMedium } from "../../components/logo/Logo";
 import {
   IconPencil,
@@ -13,26 +27,24 @@ import {
   IconReportAnalytics,
   IconTrash,
   IconDots,
-} from '@tabler/icons-react';
-
+} from "@tabler/icons-react";
 
 const Admin = (props) => {
   const { users } = props;
 
-  const filteredUsers = users.filter((user) =>
-   {if (!user.userData) {
-    return false; // filter out users without userData
-  } else return true;
-});
+  const filteredUsers = users.filter((user) => {
+    if (!user.userData) {
+      return false; // filter out users without userData
+    } else return true;
+  });
 
-if (!filteredUsers || filteredUsers.length === 0) {
-  return <Loader />;
-}
-
+  if (!filteredUsers || filteredUsers.length === 0) {
+    return <Loader />;
+  }
 
   const rows = filteredUsers.map((user) => (
     <tr key={user.id}>
-      <td >
+      <td>
         <Group spacing="sm">
           <div>
             <Text fz="sm" fw={500}>
@@ -46,21 +58,21 @@ if (!filteredUsers || filteredUsers.length === 0) {
       </td>
       <td>
         <Text fz="sm">{user.userData.kmMember}</Text>
-        <Text fz="xs" c="dimmed">
-        </Text>
-        <Badge color={
-          user.userData.kmAdmin === "admin" // check if the value of kmAdmin is "admin"
-            ? "green"
-            : "grey" // otherwise, use the jobColors object as before
-        }
-      >
-        {user.userData.kmAdmin}
-              </Badge>
+        <Text fz="xs" c="dimmed"></Text>
+        <Badge
+          color={
+            user.userData.kmAdmin === "admin" // check if the value of kmAdmin is "admin"
+              ? "green"
+              : "grey" // otherwise, use the jobColors object as before
+          }
+        >
+          {user.userData.kmAdmin}
+        </Badge>
       </td>
       <td>
         <Group spacing={0} position="right">
           <Menu
-            transitionProps={{ transition: 'pop' }}
+            transitionProps={{ transition: "pop" }}
             withArrow
             position="bottom-end"
             withinPortal
@@ -71,10 +83,15 @@ if (!filteredUsers || filteredUsers.length === 0) {
               </ActionIcon>
             </Menu.Target>
             <Menu.Dropdown>
-              <Menu.Item icon={<IconReportAnalytics size="1rem" stroke={1.5} />}>
+              <Menu.Item
+                icon={<IconReportAnalytics size="1rem" stroke={1.5} />}
+              >
                 Make Admin
               </Menu.Item>
-              <Menu.Item icon={<IconTrash size="1rem" stroke={1.5} />} color="red">
+              <Menu.Item
+                icon={<IconTrash size="1rem" stroke={1.5} />}
+                color="red"
+              >
                 Remove user from Pub
               </Menu.Item>
             </Menu.Dropdown>
@@ -84,16 +101,15 @@ if (!filteredUsers || filteredUsers.length === 0) {
     </tr>
   ));
 
-
-    return (
-      <ScrollArea>
-        <Paper
+  return (
+    <ScrollArea>
+      <Paper
         radius="md"
         p="sm"
         withBorder
         {...props}
         style={{
-          width: "80%",
+          width: "90%",
           margin: "0 auto",
         }}
       >
@@ -102,9 +118,9 @@ if (!filteredUsers || filteredUsers.length === 0) {
         </Text>
         {rows}
       </Paper>
-      </ScrollArea>
-
-    );
+      <Space h="10vh" />
+    </ScrollArea>
+  );
 };
 
 export default Admin;

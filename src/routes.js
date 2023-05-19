@@ -13,7 +13,6 @@ import AdminPage from "./pages/AdminPage";
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<PrivateRoute />}>
-      <Route index element={<EventsPage />} />
       <Route path="/profile" element={<ProfilePage />} />
       <Route path="/events/create" element={<CreateEventPage />} />
       <Route path="/events/:eventId/clicker" element={<ClickerPage />} />
@@ -22,6 +21,7 @@ const AppRoutes = () => (
     {/* <Route path="/" element={<AdminRoute />}>
 
     </Route> */}
+    <Route index element={<EventsPage />} />
     <Route path="/login" element={<LoginPage />} />
   </Routes>
 );
