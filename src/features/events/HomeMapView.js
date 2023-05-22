@@ -13,20 +13,11 @@ import { KTHCenter, mapStyles } from "../../utils/const";
 import { useDispatch, useSelector } from "react-redux";
 import { directionsCurrentLocation } from "../directions/directionsSlice";
 import { triggerDetailsUpdate } from "../directions/directionsSlice";
+import styles from "./MapView.module.css";
 
-const useStyles = createStyles((theme) => ({
-  mapWrapper: {
-    width: "100vw",
-    height: "90vh",
-    transition: "height 0.5s ease",
-  },
-  mapWrapperMarkerClicked: {
-    height: "100vh",
-  },
-}));
+const useStyles = createStyles((theme) => ({}));
 
 const HomeMapView = (props) => {
-  const { classes } = useStyles();
   const { events } = props;
 
   const dispatch = useDispatch();
@@ -53,12 +44,11 @@ const HomeMapView = (props) => {
   const [startLocation, setStartLocation] = useState(null);
   const [endLocation, setEndLocation] = useState(null);
   const [showRoute, setShowRoute] = useState(false);
+  const [directionsService, setDirectionsService] = useState(null);
 
   function openDrawer() {
     props.openDrawer();
   }
-
-  console.log("maps api", process.env.REACT_APP_MAPS_API);
 
   const { isLoaded, loadError } = useJsApiLoader({
     id: "google-map",
@@ -128,8 +118,16 @@ const HomeMapView = (props) => {
   useEffect(() => {
     if (isLoaded) {
       loadMarkers();
+      console.log("Google Maps API loaded"); // add this line
     }
   }, [isLoaded, events]);
+
+  useEffect(() => {
+    if (isLoaded) {
+      // eslint-disable-next-line
+      setDirectionsService(new google.maps.DirectionsService());
+    }
+  }, [isLoaded]);
 
   if (!isLoaded) {
     return <LoadingOverlay visible overlayBlur={2} />;
@@ -178,7 +176,8 @@ const HomeMapView = (props) => {
   }
 
   async function calculateRoute(endLocation) {
-    const directionsService = new google.maps.DirectionsService(); // eslint-disable-line
+    if (!directionsService) return;
+
     const results = await directionsService.route({
       origin: currentLocation,
       destination: endLocation,
@@ -249,8 +248,8 @@ const HomeMapView = (props) => {
   return (
     <>
       <div
-        className={`${classes.mapWrapper} ${
-          markerClicked ? classes.mapWrapperMarkerClicked : ""
+        className={`${styles.mapWrapper} ${
+          markerClicked ? styles.mapWrapperMarkerClicked : ""
         }`}
       >
         <Space h="5vh" />
@@ -271,9 +270,12 @@ const HomeMapView = (props) => {
           }}
         >
           <div
+            className={styles.mapButtonsWrapper}
             style={{ position: "absolute", top: "0", right: "0", zIndex: "1" }}
           >
-            <Button onClick={handleNearestPub}>Nearest Pub</Button>
+            <Button onClick={handleNearestPub} className={`${styles.nearest}`}>
+              Nearest Pub
+            </Button>
             <Button color="orange" onClick={clearRoute}>
               x
             </Button>

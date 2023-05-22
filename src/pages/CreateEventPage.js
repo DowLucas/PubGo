@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useState } from "react";
 import {
   Container,
   Text,
@@ -16,11 +16,9 @@ import {
   SimpleGrid,
   FileInput,
 } from "@mantine/core";
-import { IconUpload } from '@tabler/icons-react';
-import { useSelector } from 'react-redux';
-import { selectUser } from '../features/auth/authSlice';
-
-
+import { IconUpload } from "@tabler/icons-react";
+import { useSelector } from "react-redux";
+import { selectUser } from "../features/auth/authSlice";
 
 import { useForm } from "@mantine/form";
 import { DateTimePicker } from "@mantine/dates";
@@ -65,8 +63,6 @@ const CreateEventPage = () => {
   const [bannerFile, setBannerFile] = useState(null);
   const currentUser = useSelector(selectUser);
 
-
-
   const { classes, theme } = useStyles();
   const form = useForm({
     validateInputOnChange: true,
@@ -91,7 +87,8 @@ const CreateEventPage = () => {
         /^.{0,1000}$/.test(value) ? null : "Invalid description",
       // Event start date cannot be in the past
       startDateTime: (value) => (value > new Date() ? null : "Invalid date"),
-      endDateTime: (value, values) => (value > values.startDateTime ? null:  "invalid end date"),
+      endDateTime: (value, values) =>
+        value > values.startDateTime ? null : "invalid end date",
       termsOfService: (value) => (value ? null : "You must agree to the terms"),
       location: (value) => {
         if (value === null || value === undefined) {
@@ -147,7 +144,6 @@ const CreateEventPage = () => {
   const handleBannerFileChange = (image) => {
     setBannerFile(image);
   };
-
 
   return (
     <>
@@ -220,7 +216,7 @@ const CreateEventPage = () => {
                   mt={10}
                   placeholder="Add banner"
                   label="Event banner"
-                  accept="image/png,image/jpeg" 
+                  accept="image/png,image/jpeg"
                   icon={<IconUpload size={rem(14)} />}
                   required
                   onChange={handleBannerFileChange}
