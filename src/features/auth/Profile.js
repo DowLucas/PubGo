@@ -16,7 +16,9 @@ import {
   LoadingOverlay,
 } from "@mantine/core";
 import { LogoMedium } from "../../components/logo/Logo";
-import DisplayEventBox from "../../components/DisplayEventBox";
+import DisplayEventBox from '../../components/DisplayEventBox';
+import { clearCurrentUser } from "../usermanagement/userSlice";
+
 
 const Profile = (props) => {
   const dispatch = useDispatch();
@@ -30,6 +32,7 @@ const Profile = (props) => {
     try {
       await signOut(auth);
       dispatch(clearUser());
+      dispatch(clearCurrentUser());
       navigate("/login");
     } catch (error) {
       console.error("Error signing out:", error);
