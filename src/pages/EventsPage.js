@@ -6,6 +6,8 @@ import {
   Center,
   Drawer,
   LoadingOverlay,
+  Dialog,
+  Text
 } from "@mantine/core";
 import { SegmentedControl } from "@mantine/core";
 import { IconPhoto, IconMessageCircle, IconEye } from "@tabler/icons-react";
@@ -20,6 +22,8 @@ import { useSelector, useDispatch } from "react-redux";
 import DisplayEventInfo from "../components/DisplayEventInfo";
 import { useSetSelectedEvent } from "../features/events/actions/useSelectedEvent";
 import { triggerDetailsUpdate } from "../features/directions/directionsSlice";
+import { useDisclosure } from '@mantine/hooks';
+
 
 const EventsPage = () => {
   const [markers, setMarkers] = useState([]);
@@ -52,6 +56,8 @@ const EventsPage = () => {
 
   const [localTriggerDrawerState, setLocalTriggerDrawerState] = useState(triggerDrawerState);
   const [localTriggerState, setLocalTriggerState] = useState(triggerState);
+  const [dialogOpened, { toggle, close }] = useDisclosure(false);
+
 
 
   useEffect(() => {
@@ -110,14 +116,18 @@ const EventsPage = () => {
   function handleNearestPub() {
     triggerDrawerOpen();
     clearRoute();
-    const nearestMarker = findNearestMarker(currentLocation);
-    if (nearestMarker) {
-      const latitude = parseFloat(nearestMarker.location.lat);
-      const longitude = parseFloat(nearestMarker.location.lng);
-      const markerLocation = { lat: latitude, lng: longitude };
-
-      setEndLocation(markerLocation);
-      setSelectedEvent(nearestMarker);
+    if (currentLocation && currentLocation.lat) {
+      const nearestMarker = findNearestMarker(currentLocation);
+      if (nearestMarker) {
+        const latitude = parseFloat(nearestMarker.location.lat);
+        const longitude = parseFloat(nearestMarker.location.lng);
+        const markerLocation = { lat: latitude, lng: longitude };
+  
+        setEndLocation(markerLocation);
+        setSelectedEvent(nearestMarker);
+      }
+    } else {
+      toggle();
     }
   }
 
@@ -314,6 +324,11 @@ const EventsPage = () => {
       {activeTab === "list" && (
         <HomeListView events={events} setActiveTab={setActiveTab} />
       )}
+      <Dialog opened={dialogOpened} withCloseButton onClose={close} size="md" radius="md">
+        <Text size="sm" mb="xs" weight={500}>
+          You have to enable location services to find nearest pub!
+        </Text>
+      </Dialog>
     </div>
   );
 };

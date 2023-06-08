@@ -24,7 +24,7 @@ const HomeMapView = (props) => {
           markerClicked ? styles.mapWrapperMarkerClicked : ""
         }`}
       >
-        <Space h="5vh" />
+        <Space h="5.5vh" />
         <GoogleMap
           options={{
             styles: mapStyles,
@@ -42,10 +42,9 @@ const HomeMapView = (props) => {
           }}
         >
           <div
-            className={styles.mapButtonsWrapper}
-            style={{ position: "absolute", top: "0", right: "0", zIndex: "1" }}
+            style={{ position: "absolute", top: "0", right: "0px", zIndex: "1" }}
           >
-            <Button onClick={handleNearestPub} className={`${styles.nearest}`}>
+            <Button onClick={handleNearestPub}>
               Nearest Pub
             </Button>
             <Button color="orange" onClick={clearRoute}>
