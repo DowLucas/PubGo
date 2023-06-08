@@ -114,9 +114,9 @@ const EventsPage = () => {
   };
 
   function handleNearestPub() {
-    triggerDrawerOpen();
     clearRoute();
     if (currentLocation && currentLocation.lat) {
+      triggerDrawerOpen();
       const nearestMarker = findNearestMarker(currentLocation);
       if (nearestMarker) {
         const latitude = parseFloat(nearestMarker.location.lat);
