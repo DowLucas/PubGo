@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createStyles, LoadingOverlay } from "@mantine/core";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Profile from "../features/auth/Profile";
+import Profile from "../features/auth/ProfileView";
 import Navbar from "../features/navbar/NavBar";
 import { useFetchEventsQuery } from "../features/events/eventSlice";
 import { useSelector } from 'react-redux';

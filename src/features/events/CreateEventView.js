@@ -83,7 +83,6 @@ const CreateEventView = (props) => {
                     label="Event Start"
                     value={form.values.startDateTime}
                     placeholder="Choose date & time of event"
-                    maw={400}
                     required
                     withAsterisk
                     {...form.getInputProps("startDateTime")}
@@ -94,7 +93,6 @@ const CreateEventView = (props) => {
                     label="Event end"
                     value={form.values.endDateTime}
                     placeholder="Choose date & time of event"
-                    maw={400}
                     required
                     withAsterisk
                     {...form.getInputProps("endDateTime")}

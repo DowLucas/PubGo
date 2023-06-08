@@ -2,13 +2,13 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import App from "./App";
 import PrivateRoute from "./features/auth/PrivateRoute";
-import LoginPage from "./pages/LoginPage";
-import EventsPage from "./pages/EventsPage";
-import CreateEventPage from "./pages/CreateEventPage";
+import LoginPage from "./pages/LoginPresenter";
+import EventsPage from "./pages/EventsPresenter";
+import CreateEventPage from "./pages/CreateEventPresenter";
 import Navbar from "./features/navbar/NavBar";
-import ProfilePage from "./pages/ProfilePage";
-import ClickerPage from "./pages/ClickerPage";
-import AdminPage from "./pages/AdminPage";
+import ProfilePage from "./pages/ProfilePresenter";
+import ClickerPage from "./pages/ClickerPresenter";
+import AdminPage from "./pages/AdminPresenter";
 
 const AppRoutes = () => (
   <Routes>

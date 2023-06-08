@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import Clicker from "../features/clicker/Clicker";
+import Clicker from "../features/clicker/ClickerView";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useUpdateClickerMutation } from "../features/clicker/clickerApi";
