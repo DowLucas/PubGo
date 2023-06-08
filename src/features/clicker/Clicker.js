@@ -1,41 +1,14 @@
-import { Center, Container } from "@mantine/core";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
 import styles from "./Clicker.module.css";
 import { Paper, Text } from "@mantine/core";
-import Loader from "../../components/loader";
-import { useUpdateClickerMutation } from "./clickerApi";
-import { setClickerValue } from "./clickerSlice";
-import { off, onValue, ref } from "firebase/database";
-import { database } from "../../firebase";
 
 const Clicker = (props) => {
-  const { eventId } = props;
-  const dispatch = useDispatch();
-  const clickerValue = useSelector((state) => state.clicker.value);
-
-  const [updateClicker] = useUpdateClickerMutation();
-  const onIncrease = () => {
-    updateClicker({ eventId, increment: 1 });
-  };
-
-  const onDecrease = () => {
-    updateClicker({ eventId, increment: -1 });
-  };
-
-  useEffect(() => {
-    const clickerRef = ref(database, `events/${eventId}/clicker/count`);
-    const unsubscribe = onValue(clickerRef, (snapshot) => {
-      const newValue = snapshot.val() || 0;
-      dispatch(setClickerValue(newValue));
-    });
-
-    return () => {
-      off(clickerRef, unsubscribe);
-    };
-  }, [eventId, dispatch]);
-
-  const selectedEvent = useSelector((state) => state.selectedEvent);
+  const { 
+    onIncrease,
+    onDecrease,
+    selectedEvent,
+    clickerValue
+   } = props;
 
   if (!selectedEvent) {
     // return <Loader />;
