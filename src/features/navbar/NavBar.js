@@ -5,6 +5,7 @@ import {
   IconHome,
   IconMessageCirclePlus,
   IconSettings2,
+  IconUserStar,
   IconUsersGroup,
   IconX,
 } from "@tabler/icons-react";
@@ -41,18 +42,18 @@ const Navbar = () => {
 
   const dispatch = useDispatch();
 
+  // Check if user is logged in
+  const user = useSelector((state) => state.auth.user);
+
   const handlePageChange = (page, name) => {
     dispatch(setActiveTab(name));
     navigate(page);
   };
 
   // Inital page load
-  React.useEffect(() => {
-    const path = window.location.pathname;
-    console.log(path, activePage);
-  }, []);
+  React.useEffect(() => {}, []);
 
-  //console.log("activePage", activePage);
+  const spacing = user == null ? 4 : 3;
 
   const navItemClass = (page) =>
     `${classes.navItem} ${activePage === page ? classes.active : ""}`;
@@ -61,7 +62,7 @@ const Navbar = () => {
     <Paper className={classes.navbar} shadow="xs">
       <Container>
         <Grid gutter="md" align="center">
-          <Col span={4}>
+          <Col span={spacing}>
             <div
               className={navItemClass("Events")}
               onClick={() => handlePageChange("/", "Events")}
@@ -69,7 +70,7 @@ const Navbar = () => {
               <IconHome />
             </div>
           </Col>
-          <Col span={4}>
+          <Col span={spacing}>
             <div
               className={navItemClass("Create Event")}
               onClick={() => handlePageChange("/events/create", "Create Event")}
@@ -77,14 +78,24 @@ const Navbar = () => {
               <IconCirclePlus />
             </div>
           </Col>
-          <Col span={4}>
+          <Col span={spacing}>
             <div
               className={navItemClass("Profile")}
               onClick={() => handlePageChange("/profile", "Profile")}
             >
-              <IconUsersGroup />
+              <IconUserStar />
             </div>
           </Col>
+          {user !== null ? (
+            <Col span={spacing}>
+              <div
+                className={navItemClass("Admin")}
+                onClick={() => handlePageChange("/admin", "Admin")}
+              >
+                <IconUsersGroup />
+              </div>
+            </Col>
+          ) : null}
         </Grid>
       </Container>
     </Paper>

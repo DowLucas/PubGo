@@ -19,8 +19,7 @@ import {
   IconReportAnalytics,
   IconTrash,
   IconDots,
-} from '@tabler/icons-react';
-
+} from "@tabler/icons-react";
 
 const Admin = (props) => {
   const { users } = props;
@@ -33,6 +32,9 @@ const Admin = (props) => {
 
   const { currentUser, status, data, usersError } = loadingState;
 
+  if (!filteredUsers || filteredUsers.length === 0) {
+    return <Loader />;
+  }
 
   const handleAddKmUser = async (userData) => {
     try {

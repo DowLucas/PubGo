@@ -1,7 +1,12 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ref, set, update, onValue, push, get } from "firebase/database";
 import { database } from "../../firebase";
-import { getDownloadURL, getStorage, ref as storageRef, uploadBytes } from "firebase/storage";
+import {
+  getDownloadURL,
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+} from "firebase/storage";
 
 export const eventApi = createApi({
   baseQuery: fakeBaseQuery(),
@@ -44,17 +49,20 @@ export const eventApi = createApi({
           const eventsRef = ref(database, "events");
           const newEventRef = push(eventsRef);
 
-          // Upload banner to Firebase Storage
-          const storage = getStorage(); // Get Firebase Storage instance
-          const storagePath = `event_banners/${newEventRef.key}`; // Set the storage path for the banner
-          const bannerRef = storageRef(storage, storagePath); // Get a reference to the banner's storage location
-
-          // Upload the banner file bytes
-          await uploadBytes(bannerRef, eventData.banner);
-
-          // Set the banner URL in the event data
-          const bannerURL = await getDownloadURL(bannerRef);
-          updatedEventData.banner = bannerURL;
+          // Only upload the banner if it exists
+          if (eventData.banner !== null) {
+            // Upload banner to Firebase Storage
+            const storage = getStorage(); // Get Firebase Storage instance
+            const storagePath = `event_banners/${newEventRef.key}`; // Set the storage path for the banner
+            const bannerRef = storageRef(storage, storagePath); // Get a reference to the banner's storage location
+            // Upload the banner file bytes
+            await uploadBytes(bannerRef, eventData.banner);
+            // Set the banner URL in the event data
+            const bannerURL = await getDownloadURL(bannerRef);
+            updatedEventData.banner = bannerURL;
+          } else {
+            updatedEventData.banner = null;
+          }
 
           await set(newEventRef, updatedEventData);
 

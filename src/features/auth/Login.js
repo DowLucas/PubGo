@@ -14,6 +14,7 @@ import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
 import { useCreateUserMutation, useFetchSingleUserQuery } from "../usermanagement/userApi";
 import { setCurrentUser, setCurrentUserError, userSelector } from "../usermanagement/userSlice";
+
 import {
   Paper,
   Button,
@@ -147,6 +148,16 @@ const Login = (props) => {
 
         <Link to="/terms">Terms and Conditions</Link>
       </Paper>
+      <Center>
+        <Button
+          variant="link"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          <Text color="gray">Back to Map</Text>
+        </Button>
+      </Center>
     </div>
   );
 };

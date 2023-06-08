@@ -4,10 +4,21 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "firebase/auth";
 import { auth } from "../../firebase";
 import { clearUser } from "./authSlice";
-import { Button, Center, Avatar, Title, Box, ScrollArea, Stack, Text, LoadingOverlay} from "@mantine/core";
+import {
+  Button,
+  Center,
+  Avatar,
+  Title,
+  Box,
+  ScrollArea,
+  Stack,
+  Text,
+  LoadingOverlay,
+} from "@mantine/core";
 import { LogoMedium } from "../../components/logo/Logo";
 import DisplayEventBox from '../../components/DisplayEventBox';
 import { clearCurrentUser } from "../usermanagement/userSlice";
+
 
 const Profile = (props) => {
   const dispatch = useDispatch();
@@ -16,7 +27,6 @@ const Profile = (props) => {
   const { user } = props;
   const { events } = props;
   const [loading, setLoading] = useState(true);
-
 
   const handleLogout = async () => {
     try {
@@ -41,36 +51,44 @@ const Profile = (props) => {
 
   const eventCards = events.map((event, index) => (
     <div key={event.name}>
-        <DisplayEventBox event={event}/>
+      <DisplayEventBox event={event} />
     </div>
   ));
 
   return (
     <div>
-        <Center mt={30} md={20}>
-            <Avatar color="cyan" radius="xl" size="xl" src={user.photoURL || null}>MK</Avatar>
-        </Center>
-        <Title align="center" mb={20} order={2}>{user.displayName || "Username"}</Title>
-            <Title order={3} mb="xs" align="left" pl="xs">My events</Title>
-            <ScrollArea bg="lightgray" h={350} pt="md" pb="md">
-                <Box>
-                <Stack align="center">
-                  {loading ? (
-                    <Center height="100%">
-                       <LoadingOverlay visible overlayBlur={2} />
-                    </Center>
-                  ) : events.length > 0 ? (
-                    eventCards
-                  ) : (
-                    <Text align="center">You do not have any events.</Text>
-                  )}
-                  </Stack>
-                </Box>
-            </ScrollArea>
+      <Center mt={30} md={20}>
+        <Avatar color="cyan" radius="xl" size="xl" src={user.photoURL || null}>
+          MK
+        </Avatar>
+      </Center>
+      <Title align="center" mb={20} order={2}>
+        {user.displayName || "Username"}
+      </Title>
+      <Title order={3} mb="xs" align="left" pl="xs">
+        My events
+      </Title>
+      <ScrollArea bg="lightgray" h={350} pt="md" pb="md">
+        <Box>
+          <Stack align="center">
+            {loading ? (
+              <Center height="100%">
+                <LoadingOverlay visible overlayBlur={2} />
+              </Center>
+            ) : events.length > 0 ? (
+              eventCards
+            ) : (
+              <Text align="center">You do not have any events.</Text>
+            )}
+          </Stack>
+        </Box>
+      </ScrollArea>
 
-        <Center mt={30}>
-            <Button onClick={handleLogout} color="red" variant="light">Logout</Button>
-        </Center>
+      <Center mt={30}>
+        <Button onClick={handleLogout} color="red" variant="light">
+          Logout
+        </Button>
+      </Center>
     </div>
   );
 };
