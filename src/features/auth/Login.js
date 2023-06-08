@@ -12,10 +12,8 @@ import { GoogleIcon } from "./GoogleButton";
 import { Lock, At } from "tabler-icons-react";
 import { notifications } from "@mantine/notifications";
 import { IconCheck } from "@tabler/icons-react";
-import {
-  useCreateUserMutation,
-  useFetchSingleUserQuery,
-} from "../usermanagement/userApi";
+import { useCreateUserMutation, useFetchSingleUserQuery } from "../usermanagement/userApi";
+import { setCurrentUser, setCurrentUserError, userSelector } from "../usermanagement/userSlice";
 import {
   Paper,
   Button,
@@ -48,32 +46,42 @@ const Login = (props) => {
   const user = useSelector((state) => state.auth.user);
   const { register, handleSubmit, reset } = useForm();
   const [saveUser] = useCreateUserMutation();
-
   const dispatch = useDispatch();
+  const fetchUserQuery = useFetchSingleUserQuery(user);
+
+  const { data: userData, error: userError } = fetchUserQuery;
+  const {currentUser} = useSelector(userSelector);
 
   const handleSignInWithGoogle = () => {
     dispatch(signInWithGoogle());
   };
 
   const handleSignInWithPassword = (userData) => {
-    dispatch(signInWithPassword(userData.email, userData.password));
+    dispatch(signInWithPassword(userData.email, userData.password))
   };
+
+  useEffect(() => {
+    if (user && !userData) {
+      fetchUserQuery.refetch();
+    }
+    if (userError) {
+      console.log(userError, "bing");
+    }
+  }, [user, fetchUserQuery, userData, userError, currentUser]);
+  
+  useEffect(() => {
+    if (userData && !currentUser) {
+      dispatch(setCurrentUser(userData));
+    }
+  }, [user, userData, dispatch, currentUser]);
 
   // Check auth
   useEffect(() => {
-    //console.log(user);
-    if (user) {
-      saveUser({ payload: user })
-        .unwrap()
-        .then(() => {
-          console.log("User saved");
-        })
-        .catch((error) => {
-          console.error("Error saving user:", error);
-        });
+    if (user && currentUser) {
+      console.log(currentUser,'hi');
       navigate("/");
     }
-  }, [navigate, saveUser, user]);
+  }, [ navigate, user, currentUser]);
 
   useEffect(() => {
     // Clear the error state when the component mounts

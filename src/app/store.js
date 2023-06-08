@@ -13,6 +13,7 @@ import directionsSlice from "../features/directions/directionsSlice";
 import clickerSlice from "../features/clicker/clickerSlice";
 import { clickerApi } from "../features/clicker/clickerApi";
 import { userApi } from "../features/usermanagement/userApi";
+import userSlice from "../features/usermanagement/userSlice.js";
 
 
 // Configure redux-persist with the desired storage and a key
@@ -20,7 +21,7 @@ const persistConfig = {
   key: "root",
   storage,
   blacklist: ["navbar"],
-  whitelist: ["auth"], // Only persist the 'auth' state
+  whitelist: ["auth","user"], // Only persist the 'auth' state
 };
 
 const rootReducer = combineReducers({
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   navbar: navbarReducer,
   directions: directionsSlice,
   clicker: clickerSlice,
+  user: userSlice,
   [clickerApi.reducerPath]: clickerApi.reducer,
   [savedLocationsApi.reducerPath]: savedLocationsApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
