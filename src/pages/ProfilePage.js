@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createStyles, LoadingOverlay } from "@mantine/core";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Profile from "../features/auth/Profile";
 import Navbar from "../features/navbar/NavBar";
 import { useFetchEventsQuery } from "../features/events/eventSlice";
@@ -7,6 +9,11 @@ import { useSelector } from 'react-redux';
 import { selectUser } from '../features/auth/authSlice';
 import { userSelector } from "../features/usermanagement/userSlice";
 import DisplayUserTable from "../components/DisplayUserTable";
+import { signOut } from "firebase/auth"
+import { auth } from "../firebase";
+import { clearUser } from "../features/auth/authSlice";
+import { clearCurrentUser } from "../features/usermanagement/userSlice";
+
 
 const useStyles = createStyles((theme) => ({
   logoutWrapper: {
@@ -21,6 +28,30 @@ const ProfilePage = () => {
   const databaseCurrentUser = useSelector(userSelector);
   console.log(databaseCurrentUser,'my user still at render');
   const [filteredEvents, setFilteredEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      dispatch(clearUser());
+      dispatch(clearCurrentUser());
+      navigate("/login");
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  useEffect(() => {
+    const loadingTimeout = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => {
+      clearTimeout(loadingTimeout);
+    };
+  }, []);
 
   
   useEffect(() => {
@@ -38,7 +69,7 @@ const ProfilePage = () => {
     <>
       <Navbar />
       <div className={classes.logoutWrapper}>
-        <Profile events={filteredEvents} user={currentUser}/>
+        <Profile events={filteredEvents} user={currentUser} loading={loading} handleLogout={handleLogout}/>
         <DisplayUserTable/>
       </div>
     </>

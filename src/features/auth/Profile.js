@@ -1,9 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { signOut } from "firebase/auth";
-import { auth } from "../../firebase";
-import { clearUser } from "./authSlice";
 import {
   Button,
   Center,
@@ -15,38 +10,15 @@ import {
   Text,
   LoadingOverlay,
 } from "@mantine/core";
-import { LogoMedium } from "../../components/logo/Logo";
 import DisplayEventBox from '../../components/DisplayEventBox';
-import { clearCurrentUser } from "../usermanagement/userSlice";
 
 const Profile = (props) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-
-  const { user } = props;
-  const { events } = props;
-  const [loading, setLoading] = useState(true);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      dispatch(clearUser());
-      dispatch(clearCurrentUser());
-      navigate("/login");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
-
-  useEffect(() => {
-    const loadingTimeout = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-
-    return () => {
-      clearTimeout(loadingTimeout);
-    };
-  }, []);
+  const { 
+    user,
+    events,
+    loading,
+    handleLogout
+   } = props;
 
   const eventCards = events.map((event, index) => (
     <div key={event.name}>
