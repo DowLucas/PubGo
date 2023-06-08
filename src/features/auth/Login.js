@@ -1,14 +1,7 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { useForm } from "react-hook-form";
-
+import React from "react";
 import { Link } from "react-router-dom";
 import { GoogleIcon } from "./GoogleButton";
 import { Lock, At } from "tabler-icons-react";
-import { notifications } from "@mantine/notifications";
-import { IconCheck } from "@tabler/icons-react";
-import { useCreateUserMutation, useFetchSingleUserQuery } from "../usermanagement/userApi";
-import { setCurrentUser, setCurrentUserError, userSelector } from "../usermanagement/userSlice";
 import {
   Paper,
   Button,
@@ -16,7 +9,6 @@ import {
   Input,
   Group,
   Divider,
-  createStyles,
   Center,
 } from "@mantine/core";
 import LogoLarge, { CustomLogo, LogoMedium } from "../../components/logo/Logo";
