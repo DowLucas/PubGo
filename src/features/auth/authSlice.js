@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../firebase";
 import { login, logout } from "./authThunks";
 
@@ -57,7 +57,6 @@ export const signInWithGoogle = () => async (dispatch) => {
 
   try {
     const result = await signInWithPopup(auth, provider);
-    console.log(firebaseUserToObject(result.user));
     dispatch(setUser(firebaseUserToObject(result.user)));
   } catch (error) {
     dispatch(setError(error.message));
@@ -67,7 +66,18 @@ export const signInWithGoogle = () => async (dispatch) => {
 export const signInWithPassword = (email,password) => async (dispatch) => {
   try {
     const result = await signInWithEmailAndPassword(auth,email,password);
-    console.log(firebaseUserToObject(result.user));
+    dispatch(setUser(firebaseUserToObject(result.user)));
+  } catch (error) {
+    dispatch(setError(error.message));
+  }
+};
+
+export const signUpWithPassword = (email,password,name) => async (dispatch) => {
+  try {
+    const user = await createUserWithEmailAndPassword(auth, email, password);
+    console.log(user,'hello');
+    // Set the display name
+    const result =await updateProfile(user, { displayName: name });
     dispatch(setUser(firebaseUserToObject(result.user)));
   } catch (error) {
     dispatch(setError(error.message));

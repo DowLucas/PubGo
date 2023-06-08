@@ -27,7 +27,6 @@ export const userApi = createApi({
         }
       },
       providesTags: (result, error, arg) => {
-        console.log("result", result);
         if (result) {
           return [
             ...result.map(({ id }) => ({ type: "userData", id })),
@@ -42,18 +41,19 @@ export const userApi = createApi({
       queryFn: async (userInfo) => {
         try {
 
-          const eventsRef = ref(database, `users/${userInfo.id}/userData`);
+          if (!userInfo) {
+            return { data: null };
+          }
+
+          const eventsRef = ref(database, `users/${userInfo.uid}/userData`);
           const snapshot = await get(eventsRef);
-          let userData = [];
+          const userObj = {uid: userInfo.uid};
 
           snapshot.forEach((childSnap) => {
-            const obj = { id: childSnap.key, ...childSnap.val() };
-            userData.push(obj);
+            userObj[childSnap.key] = childSnap.val();
           });
 
-          console.log(userData);
-
-          return { data: userData };
+          return { data: userObj };
         } catch (error) {
           console.error(error.message);
           return { error: error.message };
@@ -64,14 +64,12 @@ export const userApi = createApi({
     createUser: builder.mutation({
       queryFn: async (userData, { getState }) => {
         try {
-          // Convert the Date object to an ISO string
+          
           const user = getState().auth.user;
           if (!user) return { data: [] };
 
-          console.log(user,"bla");
-
           const userRef = ref(database, `users/${user.uid}/userData`);
-          // Concat the location to the end of the array of the savedLocations in the database
+          
           let existingUserData = [];
 
           const snapshot = await get(userRef);
@@ -103,20 +101,27 @@ export const userApi = createApi({
       invalidatesTags: ["User"],
     }),
     updateUser: builder.mutation({
-      queryFn: async (userData) => {
+      queryFn: async ({ userData, newData }) => {
         try {
 
-          const updatedUserData = {
-            name: userData.displayName,
-            email: userData.email,
-          };
+          if (!userData || !userData.id) {
+            throw new Error('User does not exist');
+          }
+          const userRef = ref(database, `users/${userData.id}`);
+          await update(userRef, newData);
 
-          const userRef = ref(database, `users/${userData.uid}`);
-          await update(userRef, updatedUserData);
-          return { data: updatedUserData };
+          const eventsRef = ref(database, `users/${userData.id}/userData`);
+          const snapshot = await get(eventsRef);
+          const userObj = {};
+
+          snapshot.forEach((childSnap) => {
+            userObj[childSnap.key] = childSnap.val();
+          });
+
+          return { data: {uid: userData.id, userData: userObj} };
         } catch (error) {
-          console.error(error.message);
-          return { error: error.message };
+          console.error(error);
+          return { error: error };
         }
       },
       invalidatesTags: ["User"],
