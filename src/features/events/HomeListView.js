@@ -1,28 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Table, Loader, SimpleGrid } from '@mantine/core';
+import { Loader, SimpleGrid } from '@mantine/core';
 import DisplayEventCard from '../../components/DisplayEventCard';
 
 const HomeListView = (props) => {
     const { events, setActiveTab } = props;
-
-        
-    // THIS CODE CAN BE USED TO FETCH ADRESS
-    //const [addresses, setAddresses] = useState([]);
-    // useEffect(() => {
-    //     const geocoder = new window.google.maps.Geocoder();
-    //     const addresses = [];
-
-    //     events.forEach((event) => {
-    //         geocoder.geocode({ location: event.location }, (results, status) => {
-    //             if (status === 'OK') {
-    //                 addresses.push(results[0].formatted_address);
-    //                 setAddresses([...addresses]);
-    //             } else {
-    //                 console.error(`Geocoder failed due to: ${status}`);
-    //             }
-    //         });
-    //     });
-    // }, [events]);
 
     if (!events || events.length === 0) {
       return <Loader />;
