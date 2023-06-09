@@ -80,7 +80,6 @@ const EventsPage = () => {
   };
 
   function triggerDrawerOpen() {
-    console.log("ping3");
     dispatch(triggerDetailsUpdate());
   }
 
@@ -239,8 +238,8 @@ const EventsPage = () => {
       const latitude = parseFloat(selectedEvent.location.lat);
       const longitude = parseFloat(selectedEvent.location.lng);
       setEndLocation({ lat: latitude, lng: longitude });
-      console.log(endLocation);
-      console.log({ lat: latitude, lng: longitude });
+      //console.log(endLocation);
+      //console.log({ lat: latitude, lng: longitude });
       clearRoute();
       calculateRoute({ lat: latitude, lng: longitude });
       setShowRoute(true);
@@ -248,7 +247,7 @@ const EventsPage = () => {
 
     setLocalTriggerState(triggerState);
 
-    console.log("Try to show directions");
+    //console.log("Try to show directions");
   }, [triggerState]);
 
   useEffect(() => {

@@ -9,7 +9,6 @@ export default function DisplayEventInfo(props) {
   const dispatch = useDispatch()
 
   function triggerShowDirections() {
-    console.log("ping")
     dispatch(triggerMapUpdate())
     dispatch(triggerDetailsUpdate())
   }

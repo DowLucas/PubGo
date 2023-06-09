@@ -32,9 +32,7 @@ export default function DisplayEventCard(props) {
   };
 
   function triggerShowDirections() {
-    console.log("ping");
     handleTabChange("map");
-    console.log("ping");
     dispatch(triggerMapUpdate());
     setSelectedEvent(event);
   }
