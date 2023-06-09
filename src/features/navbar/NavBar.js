@@ -53,7 +53,7 @@ const Navbar = () => {
   // Inital page load
   React.useEffect(() => {}, []);
 
-  const spacing = user == null ? 4 : 3;
+  const spacing = 4;
 
   const navItemClass = (page) =>
     `${classes.navItem} ${activePage === page ? classes.active : ""}`;
@@ -86,16 +86,6 @@ const Navbar = () => {
               <IconUserStar />
             </div>
           </Col>
-          {user !== null ? (
-            <Col span={spacing}>
-              <div
-                className={navItemClass("Admin")}
-                onClick={() => handlePageChange("/admin", "Admin")}
-              >
-                <IconUsersGroup />
-              </div>
-            </Col>
-          ) : null}
         </Grid>
       </Container>
     </Paper>

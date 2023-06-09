@@ -72,13 +72,14 @@ export const signInWithPassword = (email,password) => async (dispatch) => {
   }
 };
 
-export const signUpWithPassword = (email,password,name) => async (dispatch) => {
+export const signUpWithPassword = (email,password,displayName) => async (dispatch) => {
   try {
-    const user = await createUserWithEmailAndPassword(auth, email, password);
-    console.log(user,'hello');
+    const result = await createUserWithEmailAndPassword(auth, email, password);
     // Set the display name
-    const result =await updateProfile(user, { displayName: name });
-    dispatch(setUser(firebaseUserToObject(result.user)));
+    await updateProfile(auth.currentUser, { displayName: displayName });
+    const updatedResult = firebaseUserToObject(result.user)
+    updatedResult.displayName = displayName;
+    dispatch(setUser(updatedResult));
   } catch (error) {
     dispatch(setError(error.message));
     console.log(error.message);
@@ -87,5 +88,6 @@ export const signUpWithPassword = (email,password,name) => async (dispatch) => {
 
 export const selectUser = (state) => state.auth.user;
 export const selectError = (state) => state.auth.error;
+export const selectStatus = (state) => state.auth.status;
 
 export default authSlice.reducer;

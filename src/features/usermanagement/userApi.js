@@ -16,7 +16,7 @@ export const userApi = createApi({
           let users = [];
 
           snapshot.forEach((childSnap) => {
-            const obj = { id: childSnap.key, ...childSnap.val() };
+            const obj = { uid: childSnap.key, ...childSnap.val() };
             users.push(obj);
           });
           
@@ -29,8 +29,8 @@ export const userApi = createApi({
       providesTags: (result, error, arg) => {
         if (result) {
           return [
-            ...result.map(({ id }) => ({ type: "userData", id })),
-            { type: "userData", id: "LIST" },
+            ...result.map(({ uid }) => ({ type: "userData", uid })),
+            { type: "userData", uid: "LIST" },
           ];
         } else {
           return ["User"];
@@ -47,8 +47,8 @@ export const userApi = createApi({
 
           const eventsRef = ref(database, `users/${userInfo.uid}/userData`);
           const snapshot = await get(eventsRef);
-          const userObj = {uid: userInfo.uid};
 
+          const userObj = {uid: userInfo.uid};
           snapshot.forEach((childSnap) => {
             userObj[childSnap.key] = childSnap.val();
           });
@@ -61,56 +61,34 @@ export const userApi = createApi({
       },
       providesTags: ["User"],
     }),
-    createUser: builder.mutation({
-      queryFn: async (userData, { getState }) => {
-        try {
-          
-          const user = getState().auth.user;
-          if (!user) return { data: [] };
+    // createUser: builder.mutation({
+    //   queryFn: async (user) => {
+    //     try {
 
-          const userRef = ref(database, `users/${user.uid}/userData`);
-          
-          let existingUserData = [];
+    //       console.log(user)
 
-          const snapshot = await get(userRef);
-          
-          snapshot.forEach((childSnap) => {
-            const obj = { id: childSnap.key, ...childSnap.val() };
-            existingUserData.push(obj);
-          });
+    //       const userRef = ref(database, `users/${user.uid}/userData`);
 
-          const emailToFind = user.email;
-          const emailCheck = existingUserData.find(user => user.email === emailToFind);
-          if (emailCheck) {return { error: 'Email already exists' };}
+    //       await set(userRef, user);
 
-          const updates = {
-            email: user.email,
-            name: user.displayName,
-            kmMember: null,
-            kmAdmin: null
-          };
-
-          await set(userRef, updates);
-
-          return { data: { id: userRef.key, ...updates } };
-        } catch (error) {
-          console.error(error.message);
-          return { error: error.message };
-        }
-      },
-      invalidatesTags: ["User"],
-    }),
+    //       return { data: { uid: userRef.key, ...user } };
+    //     } catch (error) {
+    //       console.error(error.message);
+    //       return { error: error.message };
+    //     }
+    //   },
+    //   invalidatesTags: ["User"],
+    // }),
     updateUser: builder.mutation({
       queryFn: async ({ userData, newData }) => {
         try {
-
-          if (!userData || !userData.id) {
-            throw new Error('User does not exist');
+          if (!userData || !userData.uid) {
+            throw new Error('Cannot update non-existen user');
           }
-          const userRef = ref(database, `users/${userData.id}`);
+          const userRef = ref(database, `users/${userData.uid}`);
           await update(userRef, newData);
 
-          const eventsRef = ref(database, `users/${userData.id}/userData`);
+          const eventsRef = ref(database, `users/${userData.uid}/userData`);
           const snapshot = await get(eventsRef);
           const userObj = {};
 
@@ -118,7 +96,7 @@ export const userApi = createApi({
             userObj[childSnap.key] = childSnap.val();
           });
 
-          return { data: {uid: userData.id, userData: userObj} };
+          return { data: {uid: userData.uid, userData: userObj} };
         } catch (error) {
           console.error(error);
           return { error: error };
@@ -134,4 +112,5 @@ export const {
   useFetchSingleUserQuery,
   useCreateUserMutation,
   useUpdateUserMutation,
+  createUser,
 } = userApi;
