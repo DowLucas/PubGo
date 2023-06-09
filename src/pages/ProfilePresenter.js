@@ -7,12 +7,10 @@ import Navbar from "../features/navbar/NavBar";
 import { useFetchEventsQuery } from "../features/events/eventSlice";
 import { useSelector } from 'react-redux';
 import { selectUser } from '../features/auth/authSlice';
-import { userSelector } from "../features/usermanagement/userSlice";
-import DisplayUserTable from "../components/DisplayUserTable";
 import { signOut } from "firebase/auth"
 import { auth } from "../firebase";
 import { clearUser } from "../features/auth/authSlice";
-import { clearCurrentUser } from "../features/usermanagement/userSlice";
+import { clearCurrentUser, userSelector } from "../features/usermanagement/userSlice";
 
 
 const useStyles = createStyles((theme) => ({
@@ -25,8 +23,7 @@ const ProfilePage = () => {
   const { classes } = useStyles();
   const { data: events, error, isLoading } = useFetchEventsQuery();
   const currentUser = useSelector(selectUser);
-  const databaseCurrentUser = useSelector(userSelector);
-  console.log(databaseCurrentUser,'my user still at render');
+  const databaseUser = useSelector(userSelector);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -69,8 +66,7 @@ const ProfilePage = () => {
     <>
       <Navbar />
       <div className={classes.logoutWrapper}>
-        <Profile events={filteredEvents} user={currentUser} loading={loading} handleLogout={handleLogout}/>
-        <DisplayUserTable/>
+        <Profile events={filteredEvents} user={currentUser} loading={loading} handleLogout={handleLogout} databaseUser={databaseUser}/>
       </div>
     </>
   );

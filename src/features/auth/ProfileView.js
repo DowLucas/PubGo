@@ -9,15 +9,18 @@ import {
   Stack,
   Text,
   LoadingOverlay,
+  Badge,
 } from "@mantine/core";
 import DisplayEventBox from '../../components/DisplayEventBox';
+import DisplayUserTable from "../../components/DisplayUserTable";
 
 const Profile = (props) => {
   const { 
     user,
     events,
     loading,
-    handleLogout
+    handleLogout,
+    databaseUser
    } = props;
 
   const eventCards = events.map((event, index) => (
@@ -28,14 +31,33 @@ const Profile = (props) => {
 
   return (
     <div>
+      <ScrollArea>
       <Center mt={30} md={20}>
         <Avatar color="cyan" radius="xl" size="xl" src={user.photoURL || null}>
           MK
         </Avatar>
       </Center>
-      <Title align="center" mb={20} order={2}>
+      <Title align="center" order={2}>
         {user.displayName || "Username"}
       </Title>
+      <Text c="dimmed" align="center">
+        {user.email || "No email found"}
+      </Text>
+      <Center>
+      <Badge color={
+          databaseUser.currentUser.kmMember // check if the value of kmAdmin is true
+            ? "black"
+            : "grey"
+        }
+      >
+        {databaseUser.currentUser.kmMember || 'Guest'}
+              </Badge>
+              </Center>
+      <Center mt={30}>
+        <Button onClick={handleLogout} color="red" variant="light">
+          Logout
+        </Button>
+      </Center>
       <Title order={3} mb="xs" align="left" pl="xs">
         My events
       </Title>
@@ -54,12 +76,9 @@ const Profile = (props) => {
           </Stack>
         </Box>
       </ScrollArea>
-
-      <Center mt={30}>
-        <Button onClick={handleLogout} color="red" variant="light">
-          Logout
-        </Button>
-      </Center>
+      <DisplayUserTable/>
+      </ScrollArea>
+      <Box h={70}></Box>
     </div>
   );
 };

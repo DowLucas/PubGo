@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
-import { Button, Center, Group, Paper, Text, Loader, SimpleGrid, Badge, ScrollArea, ActionIcon, Menu, Table, Input} from "@mantine/core";
+import { Button, Group, Text, Loader, Badge, ScrollArea, ActionIcon, Menu, Table, Input, Select, Title} from "@mantine/core";
+import { notifications } from '@mantine/notifications';
+import { IconCheck, IconX } from "@tabler/icons-react";
 import {
   IconPencil,
-  IconMessages,
-  IconNote,
   IconReportAnalytics,
   IconTrash,
-  IconDots,
 } from '@tabler/icons-react';
 import {useFetchUserQuery, useUpdateUserMutation} from "../features/usermanagement/userApi.js";
 import { useSelector } from "react-redux";
@@ -18,41 +17,116 @@ import { userSelector, setCurrentUserError } from "../features/usermanagement/us
 const DisplayUserTable = (props) => {
   const [updateUser] = useUpdateUserMutation();
   useFetchUserQuery();
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm();
   const loadingState = useSelector(userSelector);
   const { currentUser, status, data, error } = loadingState;
   const dispatch = useDispatch();
+  let chapterPubs;
+  let filteredUsers;
 
   const handleMakeAdmin = async (userData) => {
     try {
         const updates = {};
         updates['/userData/kmAdmin'] = true;
-      await updateUser({ userData: userData, newData: updates });
+      if(!userData.userData.hasOwnProperty("kmAdmin")){
+        await updateUser({ userData: userData, newData: updates });
+        notifications.show({
+            title: "Success",
+            id: "user-km-admin",
+            color: "green",
+            message: "The user was added as admin",
+            icon: <IconCheck />,
+          });
+    } else {
+        notifications.show({
+            title: "User already admin",
+            id: "user-already-km-admin",
+            color: "red",
+            message: "The user is already admin",
+            icon: <IconX />,
+          });
+    }
     } catch (error) {
-      console.error("Error setting admin:", error);
+      notifications.show({
+        title: "Could not add admin",
+        id: "error-adding-km-admin",
+        color: "red",
+        icon: <IconX />,
+      });
     }
   };
 
   const handleRemoveKmAccess = async (userData) => {
     try {
+        if(userData.userData.hasOwnProperty("kmAdmin")){
         const updates = {};
         updates['/userData/kmAdmin'] = false;
         updates['/userData/kmMember'] = null;
       await updateUser({ userData: userData, newData: updates });
+      notifications.show({
+        title: "User removed",
+        id: "removed-km-user",
+        color: "green",
+        message: "The user was removed from the chapter pub",
+        icon: <IconCheck />,
+      });
+    } else {
+        notifications.show({
+            title: "Could not remove user",
+            id: "error-removing-km-user",
+            color: "red",
+            message: "User not part of chapter pub",
+            icon: <IconX />,
+          });
+    }
     } catch (error) {
-      console.error("Error setting admin:", error);
+      notifications.show({
+        title: "Could not remove user",
+        id: "error-removing-km-user",
+        color: "red",
+        icon: <IconX />,
+      });
     }
   };
 
-  const handleAddKmUser = async (userEmail) => {
+  const handleAddKmUser = async (formData) => {
     try {
-        const matchingIndex = data.findIndex(obj => obj.userData.email === userEmail.email);
-        console.log(data[matchingIndex]);
-        const updates = {};
-        updates['/userData/kmMember'] = currentUser.kmMember;
-      await updateUser({ userData: data[matchingIndex], newData: updates });
+        const matchingUser = data.find(obj => obj.userData.email === formData.email);
+        //Checks if universal user(site admin) or if the user doesn't already have the KM added
+        if(currentUser.kmMember === 'PubGo' || matchingUser.userData.kmMember !== formData.kmMember){
+            const updates = {};
+            updates['/userData/kmMember'] = formData.kmMember;
+            await updateUser({ userData: matchingUser, newData: updates });
+            notifications.show({
+                title: "User added",
+                id: "user-added-km-member",
+                color: "green",
+                message: "The user was added to this chapter pub",
+                icon: <IconCheck />,
+              });
+        } else {
+            notifications.show({
+                title: "User already member",
+                id: "user-already-km-member",
+                color: "red",
+                message: "The user is already part of this chapter pub",
+                icon: <IconX />,
+              });
+        }
+        reset();
     } catch (error) {
-      console.error("Error setting admin:", error);
+        let errorMessage;
+        if (error.message === 'Cannot read properties of undefined (reading \'email\')') {
+            errorMessage = 'User does not exist'
+        } else { errorMessage = 'Could not add user'}
+      notifications.show({
+        title: "Could not add user",
+        id: "error-adding-km-member",
+        color: "red",
+        message: errorMessage,
+        icon: <IconX />,
+      });
+      reset();
     }
   };
 
@@ -60,7 +134,6 @@ const DisplayUserTable = (props) => {
 
   useEffect(() => {
     if (status === "rerender") {
-      // Increment the rerenderKey to trigger a reload
       setRerenderKey((prevKey) => prevKey + 1);
     }
   }, [status]);
@@ -74,30 +147,38 @@ const DisplayUserTable = (props) => {
     return <Loader/>
   }
 
-
-  if (error) {
-    console.log(error)
-    if(error !== "User does not exist") {
-        return <Text>Error: {error.message}</Text>;
-    } else {
-        alert("This email is not registered to any user. Please ask the user to register an account before adding them to the Chapter pub");
-        dispatch(setCurrentUserError(null));
-        reset();
+  try{
+    if(currentUser.kmMember === 'PubGo') {
+        chapterPubs = ['DKM', 'CLW', 'MKM', 'KMB', 'OKM', 'NKM'] 
+        filteredUsers = data.filter((user) => {
+            if (user.hasOwnProperty("userData") && user.userData.hasOwnProperty("kmMember")) {
+              return true
+            } else return false
+        })
+    } else if (currentUser.hasOwnProperty("kmMember")){ 
+        chapterPubs = [currentUser.kmMember] 
+        filteredUsers = data.filter((user) => {
+            if (user.hasOwnProperty("userData") && user.userData.hasOwnProperty("kmMember") && (user.userData.kmMember === currentUser.kmMember)) {
+              return true
+            } else return false
+        })
+    } else { filteredUsers = []}
+    } catch (error) {
+        console.log(error)
+        console.log(error.message)
+        return <div></div>;
     }
-  }
 
-  if (data.length === 0) {
-    return <Text>No users</Text>;
-  }
-
-  const filteredUsers = data.filter((user) => user.userData.kmMember === currentUser.kmMember);
+//   if (data.length === 0) {
+//     return <Text aling='center' >No users</Text>;
+//   }
 
   if (filteredUsers.length === 0) {
-    return <Text>No users added to chapter pub</Text>;
+    return <div></div>;
   }
 
   const rows = filteredUsers.map((user) => (
-    <tr key={user.id}>
+    <tr key={user.uid}>
       <td >
           <div>
             <Text fz="sm" fw={500}>
@@ -164,6 +245,9 @@ const DisplayUserTable = (props) => {
 
     return (
     <div>
+        {currentUser.kmMember && (<Title order={3} mb="xs" align="left" pl="xs">
+        {currentUser.kmMember} Users
+        </Title>)}
         {currentUser.kmAdmin && ( 
         <form onSubmit={handleSubmit(handleAddKmUser)} style={{ display: "flex", alignItems: "center" }}>
           <Input
@@ -172,16 +256,24 @@ const DisplayUserTable = (props) => {
             label="Email *"
             Required
             error={!!errors.email}
-            style={{ width: "80%", margin: '1%' }}
+            style={{ width: "70%", margin: '1%' }}
+          />
+          <Select
+            {...register("kmMember")}
+            value={watch('kmMembebr')}
+            onChange={(value) => setValue('kmMember', value)}
+            placeholder="Select a chapter pub"
+            data={chapterPubs}
           />
           <Button type="submit" style={{ width: "15%", margin: '1%' }}>Add user</Button>
         </form>
         )}
         <div>
-        {currentUser.kmMember && (<ScrollArea h={250} type="scroll">
+        {currentUser.kmMember && (<ScrollArea h={200} type="scroll">
         <Table 
         withBorder
-        highlightOnHover>
+        highlightOnHover
+        style={{ width: "100%", margin: '1%' }}>
           <thead>
             <tr>
               <th>Name</th>
