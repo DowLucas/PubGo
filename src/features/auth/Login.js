@@ -64,7 +64,7 @@ const Login = (props) => {
           </GoogleButton>
         </Group>
         <Text size="md" color="gray">
-          Login with Email & Password:
+          Login with Email & Password given by admin:
         </Text>
         <form onSubmit={handleSubmit(handleSignInWithPassword)}>
           {error && <Text color="red">{error}</Text>}
